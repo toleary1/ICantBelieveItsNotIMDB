@@ -65,7 +65,7 @@ class JavaScript extends React.Component {
     this.state = {
       demoModal: false,
       miniModal: false,
-      formModal: false
+      signin: false
     };
   }
   toggleModal = modalState => {
@@ -187,13 +187,13 @@ class JavaScript extends React.Component {
             {/* Start Form Modal */}
             <Modal
               modalClassName="modal-black"
-              isOpen={this.state.formModal}
-              toggle={() => this.toggleModal("formModal")}
+              isOpen={this.state.signin}
+              toggle={() => this.toggleModal("signin")}
             >
               <div className="modal-header justify-content-center">
                 <button
                   className="close"
-                  onClick={() => this.toggleModal("formModal")}
+                  onClick={() => this.toggleModal("signin")}
                 >
                   <i className="tim-icons icon-simple-remove text-white" />
                 </button>

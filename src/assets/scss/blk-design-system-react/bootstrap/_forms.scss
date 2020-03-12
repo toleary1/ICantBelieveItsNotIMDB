@@ -15,6 +15,8 @@
   background-color: $input-bg;
   background-clip: padding-box;
   border: $input-border-width solid $input-border-color;
+  resize: vertical;
+  border: 1px solid #2b3553;
 
   // Note: This has no effect on <select>s in some browsers, due to the limited stylability of `<select>`s in CSS.
   @if $enable-rounded {
@@ -164,6 +166,8 @@ select.form-control {
 
 textarea.form-control {
   height: auto;
+  resize: vertical;
+  border: 1px solid #2b3553;
 }
 // stylelint-enable no-duplicate-selectors
 

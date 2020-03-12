@@ -27,6 +27,9 @@ import Index from "views/Index.jsx";
 import LandingPage from "views/examples/LandingPage.jsx";
 import RegisterPage from "views/examples/RegisterPage.jsx";
 import ProfilePage from "views/examples/ProfilePage.jsx";
+import AddMovie from "views/examples/AddMovie.jsx";
+import ListMovies from "views/examples/ListMovies.jsx";
+import MoviePage from "views/examples/MoviePage.jsx";
 
 ReactDOM.render(
   <BrowserRouter>
@@ -43,6 +46,18 @@ ReactDOM.render(
       <Route
         path="/profile-page"
         render={props => <ProfilePage {...props} />}
+      />
+      <Route
+        path="/add-movie"
+        render={props => <AddMovie {...props} />}
+      />
+      <Route
+        path="/list-movies"
+        render={props => <ListMovies {...props} />}
+      />
+      <Route
+        path="/movie-page"
+        render={props => <MoviePage {...props} />}
       />
       <Redirect from="/" to="/components" />
     </Switch>

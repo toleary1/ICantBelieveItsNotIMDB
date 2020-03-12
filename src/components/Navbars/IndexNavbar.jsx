@@ -17,6 +17,7 @@
 */
 import React from "react";
 import { Link } from "react-router-dom";
+import classnames from "classnames";
 // reactstrap components
 import {
   Button,
@@ -32,16 +33,32 @@ import {
   Nav,
   Container,
   Row,
-  Col
+  Modal,
+  Col,
+  FormGroup,
+  Label,
+  Input,
+  InputGroup,
+  InputGroupAddon,
+  InputGroupText,
+  Form
 } from "reactstrap";
 
 class ComponentsNavbar extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      formModal: false,
       collapseOpen: false,
+      signin: false,
+      register: false,
       color: "navbar-transparent"
     };
+  }
+  toggleModal = modalState => {
+    this.setState({
+      [modalState]: !this.state[modalState]
+    });
   }
   componentDidMount() {
     window.addEventListener("scroll", this.changeColor);
@@ -102,9 +119,8 @@ class ComponentsNavbar extends React.Component {
               rel="noopener noreferrer"
               title="Designed and Coded by Creative Tim"
               tag={Link}
-            >
-              <span>BLK• </span>
-              Design System React
+            >              
+              I Can't Believe It's Not IMDB
             </NavbarBrand>
             <button
               aria-expanded={this.state.collapseOpen}
@@ -141,82 +157,205 @@ class ComponentsNavbar extends React.Component {
                 </Col>
               </Row>
             </div>
-            <Nav navbar>
-              <NavItem className="p-0">
-                <NavLink
-                  data-placement="bottom"
-                  href="https://twitter.com/CreativeTim"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  title="Follow us on Twitter"
-                >
-                  <i className="fab fa-twitter" />
-                  <p className="d-lg-none d-xl-none">Twitter</p>
-                </NavLink>
-              </NavItem>
-              <NavItem className="p-0">
-                <NavLink
-                  data-placement="bottom"
-                  href="https://www.facebook.com/CreativeTim"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  title="Like us on Facebook"
-                >
-                  <i className="fab fa-facebook-square" />
-                  <p className="d-lg-none d-xl-none">Facebook</p>
-                </NavLink>
-              </NavItem>
-              <NavItem className="p-0">
-                <NavLink
-                  data-placement="bottom"
-                  href="https://www.instagram.com/CreativeTimOfficial"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                  title="Follow us on Instagram"
-                >
-                  <i className="fab fa-instagram" />
-                  <p className="d-lg-none d-xl-none">Instagram</p>
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav>
-                <DropdownToggle
-                  caret
-                  color="default"
-                  data-toggle="dropdown"
-                  href="#pablo"
-                  nav
-                  onClick={e => e.preventDefault()}
-                >
-                  <i className="fa fa-cogs d-lg-none d-xl-none" />
-                  Getting started
-                </DropdownToggle>
-                <DropdownMenu className="dropdown-with-icons">
-                  <DropdownItem href="https://demos.creative-tim.com/blk-design-system-react/#/documentation/tutorial">
-                    <i className="tim-icons icon-paper" />
-                    Documentation
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/register-page">
-                    <i className="tim-icons icon-bullet-list-67" />
-                    Register Page
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/landing-page">
-                    <i className="tim-icons icon-image-02" />
-                    Landing Page
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/profile-page">
-                    <i className="tim-icons icon-single-02" />
-                    Profile Page
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
+            <Nav navbar>              
               <NavItem>
                 <Button
                   className="nav-link d-none d-lg-block"
                   color="default"
-                  onClick={this.scrollToDownload}
+                  onClick={() => this.toggleModal("register")}
                 >
-                  <i className="tim-icons icon-cloud-download-93" /> Download
+                  <i className="tim-icons icon-bell-55" /> Register
                 </Button>
+              </NavItem>
+              <NavItem>
+                <Button
+                  className="nav-link d-none d-lg-block"
+                  color="default"
+                  onClick={() => this.toggleModal("signin")}
+                >
+                  <i className="tim-icons icon-tap-02" /> Sign In
+                </Button>
+                <NavItem>                
+            </NavItem>
+            {/* Sign-in Modal start*/}
+            <Modal
+              modalClassName="modal-black"
+              isOpen={this.state.signin}
+              toggle={() => this.toggleModal("signin")}
+            >
+              <div className="modal-header justify-content-center">
+                <button
+                  className="close"
+                  onClick={() => this.toggleModal("signin")}
+                >
+                  <i className="tim-icons icon-simple-remove text-white" />
+                </button>
+                <div className="text-muted text-center ml-auto mr-auto">
+                  <h3 className="mb-0">Sign in to your profile</h3>
+                </div>
+              </div>
+              <div className="modal-body">                
+                <Form role="form">
+                  <FormGroup className="mb-3">
+                    <InputGroup
+                      className={classnames("input-group-alternative", {
+                        "input-group-focus": this.state.emailFocus
+                      })}
+                    >
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="tim-icons icon-email-85" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="Username"
+                        type="email"
+                        onFocus={e => this.setState({ emailFocus: true })}
+                        onBlur={e => this.setState({ emailFocus: false })}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup
+                      className={classnames("input-group-alternative", {
+                        "input-group-focus": this.state.passwordFocus
+                      })}
+                    >
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="tim-icons icon-key-25" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="Password"
+                        type="password"
+                        onFocus={e => this.setState({ passwordFocus: true })}
+                        onBlur={e => this.setState({ passwordFocus: false })}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup check className="mt-3">
+                    <Label check>
+                      <Input defaultChecked type="checkbox" />
+                      <span className="form-check-sign" />
+                      Remember me!
+                    </Label>
+                  </FormGroup>
+                  <div className="text-center">
+                    <Button className="my-4" color="primary" type="button">
+                      Sign in
+                    </Button>
+                  </div>
+                </Form>
+              </div>
+            </Modal>
+              {/*Sign-in Modal end*/}
+              </NavItem>
+              <NavItem>
+                {/* Register Modal start */}
+              <Modal
+              modalClassName="modal-black"
+              isOpen={this.state.register}
+              toggle={() => this.toggleModal("register")}
+            >
+              <div className="modal-header justify-content-center">
+                <button
+                  className="close"
+                  onClick={() => this.toggleModal("register")}
+                >
+                  <i className="tim-icons icon-simple-remove text-white" />
+                </button>
+                <div className="text-muted text-center ml-auto mr-auto">
+                  <h3 className="mb-0">Register</h3>
+                </div>
+              </div>
+              <div className="modal-body">                
+                <Form role="form">
+                  <FormGroup className="mb-3">
+                    <InputGroup
+                      className={classnames("input-group-alternative", {
+                        "input-group-focus": this.state.usernameFocus
+                      })}
+                    >
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="tim-icons icon-email-85" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="Username"
+                        type="Username"
+                        onFocus={e => this.setState({ usernameFocus: true })}
+                        onBlur={e => this.setState({ usernameFocus: false })}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup className="mb-3">
+                    <InputGroup
+                      className={classnames("input-group-alternative", {
+                        "input-group-focus": this.state.emailFocus
+                      })}
+                    >
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="tim-icons icon-email-85" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="E-Mail"
+                        type="email"
+                        onFocus={e => this.setState({ emailFocus: true })}
+                        onBlur={e => this.setState({ emailFocus: false })}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup
+                      className={classnames("input-group-alternative", {
+                        "input-group-focus": this.state.passwordFocus
+                      })}
+                    >
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="tim-icons icon-key-25" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="Password"
+                        type="password"
+                        onFocus={e => this.setState({ passwordFocus: true })}
+                        onBlur={e => this.setState({ passwordFocus: false })}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <InputGroup
+                      className={classnames("input-group-alternative", {
+                        "input-group-focus": this.state.passwordcheckFocus
+                      })}
+                    >
+                      <InputGroupAddon addonType="prepend">
+                        <InputGroupText>
+                          <i className="tim-icons icon-key-25" />
+                        </InputGroupText>
+                      </InputGroupAddon>
+                      <Input
+                        placeholder="Confirm Password"
+                        type="password"
+                        onFocus={e => this.setState({ passwordcheckFocus: true })}
+                        onBlur={e => this.setState({ passwordcheckFocus: false })}
+                      />
+                    </InputGroup>
+                  </FormGroup>
+                  <div className="text-center">
+                    <Button className="my-4" color="primary" type="button">
+                      Register
+                    </Button>
+                  </div>
+                </Form>
+              </div>
+            </Modal>
+              {/* Register Modal end */}
               </NavItem>
             </Nav>
           </Collapse>

@@ -16,9 +16,12 @@
 
 */
 import React from "react";
-
+import { Link } from "react-router-dom";
 // reactstrap components
-import { Container } from "reactstrap";
+import {
+   Container,
+   Button,
+   } from "reactstrap";
 
 class PageHeader extends React.Component {
   render() {
@@ -33,11 +36,19 @@ class PageHeader extends React.Component {
         <div className="squares square7" />
         <Container>
           <div className="content-center brand">
-            <h1 className="h1-seo">BLK• React</h1>
+            <h1 className="h1-seo">I Can't Believe It's Not IMDB</h1>
             <h3 className="d-none d-sm-block">
-              A beautiful Design System for Bootstrap 4 (reactstrap) and React.
-              It's Free and Open Source.
+              Here's going to be a list of available pages.
+              This page is just a placeholder until functionality is in place.
             </h3>
+            <Button
+                className="btn-simple btn-round"
+                color="primary"
+                to="add-movie"
+                tag={Link}
+              >
+                Add Movie
+              </Button>
           </div>
         </Container>
       </div>

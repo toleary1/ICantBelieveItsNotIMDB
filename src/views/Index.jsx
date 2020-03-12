@@ -16,24 +16,17 @@
 
 */
 import React from "react";
+import { Link } from "react-router-dom";
 
 // core components
 import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
-import PageHeader from "components/PageHeader/PageHeader.jsx";
-import Footer from "components/Footer/Footer.jsx";
 
-// sections for this page/view
-import Basics from "views/IndexSections/Basics.jsx";
-import Navbars from "views/IndexSections/Navbars.jsx";
-import Tabs from "views/IndexSections/Tabs.jsx";
-import Pagination from "views/IndexSections/Pagination.jsx";
-import Notifications from "views/IndexSections/Notifications.jsx";
-import Typography from "views/IndexSections/Typography.jsx";
-import JavaScript from "views/IndexSections/JavaScript.jsx";
-import NucleoIcons from "views/IndexSections/NucleoIcons.jsx";
-import Signup from "views/IndexSections/Signup.jsx";
-import Examples from "views/IndexSections/Examples.jsx";
-import Download from "views/IndexSections/Download.jsx";
+import {
+  Container,
+  Button,
+  Row,
+  Col
+  } from "reactstrap";
 
 class Index extends React.Component {
   componentDidMount() {
@@ -46,23 +39,61 @@ class Index extends React.Component {
     return (
       <>
         <IndexNavbar />
-        <div className="wrapper">
-          <PageHeader />
-          <div className="main">
-            <Basics />
-            <Navbars />
-            <Tabs />
-            <Pagination />
-            <Notifications />
-            <Typography />
-            <JavaScript />
-            <NucleoIcons />
-            <Signup />
-            <Examples />
-            <Download />
+        <div className="page-header header-filter">
+        <div className="squares square1" />
+        <div className="squares square2" />
+        <div className="squares square3" />
+        <div className="squares square4" />
+        <div className="squares square5" />
+        <div className="squares square6" />
+        <div className="squares square7" />
+        <Container>
+          <div className="content-center brand">
+            <h1 className="h1-seo">I Can't Believe It's Not IMDB</h1>
+            <h3 className="d-none d-sm-block">
+              Here's going to be a list of available pages.
+              This page is just a placeholder until functionality is in place.
+            </h3>
+            <Row>
+              <Col>
+            <Button
+                className="btn-simple btn-round"
+                color="primary"
+                to="add-movie"
+                tag={Link}
+              >
+                Add Movie
+              </Button>
+              </Col>
+              <Col>
+              <Button
+                className="btn-simple btn-round"
+                color="primary"
+                to="list-movies"
+                tag={Link}
+              >
+                List Movies
+              </Button>
+              </Col>
+              <Col>
+              <Button
+                className="btn-simple btn-round"
+                color="primary"
+                to="movie-page"
+                tag={Link}
+              >
+                Movie Page
+              </Button>
+              </Col>
+              </Row>
+              <br></br>
+              <h3 className="d-none d-sm-block">
+              Where do you register and sign in? 
+              The handy dandy buttons on the navigation bar.
+            </h3>
           </div>
-          <Footer />
-        </div>
+        </Container>
+      </div>
       </>
     );
   }

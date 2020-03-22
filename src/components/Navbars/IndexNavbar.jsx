@@ -18,18 +18,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import classnames from "classnames";
+import Axios from "axios";
+
 // reactstrap components
 import {
   Button,
   Collapse,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  UncontrolledDropdown,
   NavbarBrand,
   Navbar,
   NavItem,
-  NavLink,
   Nav,
   Container,
   Row,
@@ -41,31 +38,159 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupText,
-  Form
+  Form,
+  Alert
 } from "reactstrap";
 
 class ComponentsNavbar extends React.Component {
   constructor(props) {
     super(props);
+    /* Function binds*/
+    this.onChangeUsername = this.onChangeUsername.bind(this);
+    this.onChangeEmail = this.onChangeEmail.bind(this);
+    this.onChangePassword = this.onChangePassword.bind(this);
+    this.onChangePasswordConfirm = this.onChangePasswordConfirm.bind(this);
+    this.onSubmitRegister = this.onSubmitRegister.bind(this);
+    this.onSignIn = this.onSignIn.bind(this);
+
+    /* Set State Variables */
     this.state = {
+      /* Binary state variables */
       formModal: false,
       collapseOpen: false,
       signin: false,
       register: false,
-      color: "navbar-transparent"
+      hidden: true,
+      alertvisible: false,      
+      signInHidden: false,
+      registerHidden: false,
+      showUsername: true,      
+      logOutHidden: true,
+      /* Non-binary state variables*/
+      color: "navbar-transparent",
+      username: "",
+      email: "",
+      password: "",
+      passwordconfirm: "",
+      alerttext: "",
+      signedInUser: ""      
+      
     };
   }
+  /* Toggle the modal to show or hide and reset state variables*/
   toggleModal = modalState => {
     this.setState({
-      [modalState]: !this.state[modalState]
+      [modalState]: !this.state[modalState],
+      username: "",
+      email: "",
+      password: "",
+      passwordconfirm: "",
+      alertvisible: false,
+      alerttext: ""
     });
   }
+  /* Functions to change states in forms */
+  onChangeUsername(e) {
+    this.setState({
+      username: e.target.value
+    });
+  }
+  onChangeEmail(e) {
+    this.setState({
+      email: e.target.value
+    });
+  }
+  onChangePassword(e) {
+    this.setState({
+      password: e.target.value
+    });
+  }
+  onChangePasswordConfirm(e) {
+    this.setState({
+      passwordconfirm: e.target.value
+    })
+  }
+  /* Function that runs when register form is submitted.
+     Makes the Axios call and does what it needs to based on 
+     the response from the .php page*/
+  onSubmitRegister(e) {
+    e.preventDefault();
+    if(this.state.password === this.state.passwordconfirm)
+    {
+    const reg = {
+      regusername: this.state.username,
+      regemail: this.state.email,
+      regpassword: this.state.password,
+      regpasswordconfirm: this.state.passwordconfirm
+    };
+
+    Axios
+     .post("https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/register", reg)
+     .then(function(response){
+       console.log(response); 
+   })
+     .catch(function (error) {
+     console.log(error); 
+     })
+ 
+     this.setState({
+       alerttext: "Successfully registered. Please sign in.",
+       alertvisible: true,
+       username: "",
+       email: "",
+       password: "",
+       passwordconfirm: ""
+     });    
+  }
+  if(this.state.password !== this.state.passwordconfirm)
+  {
+    this.setState({
+      alerttext: "Password not confirmed. Please try again.",
+      alertvisible: true,
+      password: "",
+      passwordconfirm: ""
+    })
+  }
+}
+
+/* Function that runs when the sign-in form is submitted
+   Makes the Axios call and upon success hides the buttons in the nav bar
+   for register/sign-in and replaces it with the username welcome text*/
+onSignIn(e) {
+  e.preventDefault();
+
+  const signin = {
+    signinname: this.state.username,
+    signinpassword: this.state.password
+  };
+
+  Axios
+   .post("https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/signin", signin)
+   .then(result => {
+     this.setState({     
+                signedInUser: result.data,           
+                signInHidden: true,
+                registerHidden: true,
+                showUsername: false
+                }); 
+                this.toggleModal("signin");   
+ })
+   .catch(error => {
+   console.log(error); 
+   this.setState({                
+                alerttext: "Invalid Login",
+                alertvisible:"true"
+                });
+   }) 
+}
+  
   componentDidMount() {
     window.addEventListener("scroll", this.changeColor);
   }
-  componentWillUnmount() {
+  /* componentWillUnmount() {
     window.removeEventListener("scroll", this.changeColor);
-  }
+  } */
+
   changeColor = () => {
     if (
       document.documentElement.scrollTop > 99 ||
@@ -137,7 +262,7 @@ class ComponentsNavbar extends React.Component {
             navbar
             isOpen={this.state.collapseOpen}
             onExiting={this.onCollapseExiting}
-            onExited={this.onCollapseExited}
+            onExited={this.onCollapseExited} 
           >
             <div className="navbar-collapse-header">
               <Row>
@@ -158,19 +283,19 @@ class ComponentsNavbar extends React.Component {
               </Row>
             </div>
             <Nav navbar>              
-              <NavItem>
-                <Button
+              <NavItem hidden={this.state.registerHidden}>
+                <Button                  
                   className="nav-link d-none d-lg-block"
-                  color="default"
+                  color="info"
                   onClick={() => this.toggleModal("register")}
                 >
                   <i className="tim-icons icon-bell-55" /> Register
                 </Button>
               </NavItem>
-              <NavItem>
-                <Button
+              <NavItem hidden={this.state.signInHidden}>
+                <Button                 
                   className="nav-link d-none d-lg-block"
-                  color="default"
+                  color="info"
                   onClick={() => this.toggleModal("signin")}
                 >
                   <i className="tim-icons icon-tap-02" /> Sign In
@@ -195,7 +320,7 @@ class ComponentsNavbar extends React.Component {
                 </div>
               </div>
               <div className="modal-body">                
-                <Form role="form">
+                <Form onSubmit={this.onSignIn}>
                   <FormGroup className="mb-3">
                     <InputGroup
                       className={classnames("input-group-alternative", {
@@ -209,9 +334,11 @@ class ComponentsNavbar extends React.Component {
                       </InputGroupAddon>
                       <Input
                         placeholder="Username"
-                        type="email"
+                        type="text"
                         onFocus={e => this.setState({ emailFocus: true })}
                         onBlur={e => this.setState({ emailFocus: false })}
+                        value={this.state.username}
+                        onChange={this.onChangeUsername}
                       />
                     </InputGroup>
                   </FormGroup>
@@ -228,21 +355,23 @@ class ComponentsNavbar extends React.Component {
                       </InputGroupAddon>
                       <Input
                         placeholder="Password"
-                        type="password"
+                        type={this.state.hidden ? "password" : "text"}
                         onFocus={e => this.setState({ passwordFocus: true })}
                         onBlur={e => this.setState({ passwordFocus: false })}
+                        value={this.state.password}
+                        onChange={this.onChangePassword}
                       />
                     </InputGroup>
                   </FormGroup>
-                  <FormGroup check className="mt-3">
-                    <Label check>
-                      <Input defaultChecked type="checkbox" />
-                      <span className="form-check-sign" />
-                      Remember me!
-                    </Label>
+                  <FormGroup>
+                    <Alert 
+                  color="warning"
+                  isOpen={this.state.alertvisible}
+                  >
+                    {this.state.alerttext}</Alert>
                   </FormGroup>
                   <div className="text-center">
-                    <Button className="my-4" color="primary" type="button">
+                    <Button className="my-4" color="primary" type="submit">
                       Sign in
                     </Button>
                   </div>
@@ -270,7 +399,7 @@ class ComponentsNavbar extends React.Component {
                 </div>
               </div>
               <div className="modal-body">                
-                <Form role="form">
+                <Form onSubmit ={this.onSubmitRegister}>
                   <FormGroup className="mb-3">
                     <InputGroup
                       className={classnames("input-group-alternative", {
@@ -284,9 +413,11 @@ class ComponentsNavbar extends React.Component {
                       </InputGroupAddon>
                       <Input
                         placeholder="Username"
-                        type="Username"
+                        type="text"
                         onFocus={e => this.setState({ usernameFocus: true })}
                         onBlur={e => this.setState({ usernameFocus: false })}
+                        value={this.state.username}
+                        onChange={this.onChangeUsername}
                       />
                     </InputGroup>
                   </FormGroup>
@@ -303,9 +434,11 @@ class ComponentsNavbar extends React.Component {
                       </InputGroupAddon>
                       <Input
                         placeholder="E-Mail"
-                        type="email"
+                        type="text"
                         onFocus={e => this.setState({ emailFocus: true })}
                         onBlur={e => this.setState({ emailFocus: false })}
+                        value={this.state.email}
+                        onChange={this.onChangeEmail}
                       />
                     </InputGroup>
                   </FormGroup>
@@ -322,9 +455,11 @@ class ComponentsNavbar extends React.Component {
                       </InputGroupAddon>
                       <Input
                         placeholder="Password"
-                        type="password"
+                        type={this.state.hidden ? "password" : "text"}
                         onFocus={e => this.setState({ passwordFocus: true })}
                         onBlur={e => this.setState({ passwordFocus: false })}
+                        value={this.state.password}
+                        onChange={this.onChangePassword}
                       />
                     </InputGroup>
                   </FormGroup>
@@ -341,14 +476,23 @@ class ComponentsNavbar extends React.Component {
                       </InputGroupAddon>
                       <Input
                         placeholder="Confirm Password"
-                        type="password"
+                        type={this.state.hidden ? "password" : "text"}
                         onFocus={e => this.setState({ passwordcheckFocus: true })}
                         onBlur={e => this.setState({ passwordcheckFocus: false })}
+                        value={this.state.passwordconfirm}
+                        onChange={this.onChangePasswordConfirm}
                       />
                     </InputGroup>
+                    <Row>
+                  <Alert 
+                  color="warning"
+                  isOpen={this.state.alertvisible}
+                  >
+                    {this.state.alerttext}</Alert>
+                  </Row>
                   </FormGroup>
                   <div className="text-center">
-                    <Button className="my-4" color="primary" type="button">
+                    <Button className="my-4" color="primary" type="submit">
                       Register
                     </Button>
                   </div>
@@ -357,6 +501,20 @@ class ComponentsNavbar extends React.Component {
             </Modal>
               {/* Register Modal end */}
               </NavItem>
+              <Container hidden={this.state.showUsername}>
+            <span className="navbar-text">
+              Welcome, {this.state.signedInUser}!
+            </span>
+          </Container>
+          <NavItem hidden={this.state.logOutHidden}>
+                <Button                 
+                  className="nav-link d-none d-lg-block"
+                  color="default"
+                  onClick={() => this.toggleModal("signin")}
+                >
+                  <i className="tim-icons icon-tap-02" /> Log Out
+                </Button>              
+            </NavItem>
             </Nav>
           </Collapse>
         </Container>

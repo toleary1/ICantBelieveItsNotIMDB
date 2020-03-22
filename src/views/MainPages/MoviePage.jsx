@@ -17,6 +17,10 @@
 */
 import React from "react";
 import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
+import gosling from "assets/img/RyanGosling.jpg";
+import Harrison from "assets/img/HarrisonFord.jpg";
+import Ana from "assets/img/AnaDeArmas.jpg";
+import BladeRunner2049 from "assets/img/movieposter.jpeg";
 
 // reactstrap components
 import {
@@ -28,10 +32,6 @@ import {
   CardHeader,
   CardBody,
   Form,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
   Container,
   Row,
   Col,
@@ -90,7 +90,7 @@ componentDidMount() {
                 <img
               alt="..."
               className=" "
-              src={require("assets/img/movieposter.jpeg")}
+              src={BladeRunner2049}
             />               
                 </Col>
                 <Col lg="6" md="6">
@@ -120,7 +120,7 @@ componentDidMount() {
                 <img
               alt="..."
               style={imgstyle}
-              src={require("assets/img/RyanGosling.jpg")}
+              src={gosling}
             />            
                     </Col>                    
                     <Col xs lg="2"> 
@@ -135,7 +135,7 @@ componentDidMount() {
                 <img
               alt="..."
               style={imgstyle}
-              src={require("assets/img/HarrisonFord.jpg")}
+              src={Harrison}
             />            
                     </Col>                    
                     <Col xs lg="2"> 
@@ -150,7 +150,7 @@ componentDidMount() {
                 <img
               alt="..."
               style={imgstyle}
-              src={require("assets/img/AnaDeArmas.jpg")}
+              src={Ana}
             />            
                     </Col>                    
                     <Col xs lg="2"> 

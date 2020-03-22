@@ -30,7 +30,7 @@
   "bugs": {
     "url": "https://github.com/creativetimofficial/blk-design-system-react/issues"
   },
-  "homepage": "https://github.com/creativetimofficial/blk-design-system-react#readme",
+  "homepage": ".",
   "dependencies": {
     "axios": "^0.19.2",
     "chart.js": "2.7.3",
@@ -46,7 +46,8 @@
     "react-dom": "16.8.3",
     "react-router-dom": "4.3.1",
     "react-scripts": "2.1.5",
-    "reactstrap": "7.1.0"
+    "reactstrap": "7.1.0",
+    "yarn": "^1.22.4"
   },
   "scripts": {
     "start": "react-scripts start",

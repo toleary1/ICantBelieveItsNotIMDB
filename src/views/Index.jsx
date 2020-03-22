@@ -29,6 +29,8 @@ import {
   } from "reactstrap";
 
 class Index extends React.Component {
+
+
   componentDidMount() {
     document.body.classList.toggle("index-page");
   }

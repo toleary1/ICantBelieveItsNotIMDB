@@ -17,43 +17,24 @@
 */
 import React from "react";
 import { Link } from "react-router-dom";
-import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
 import Forms from "views/IndexSections/Forms.jsx";
+
 // reactstrap components
 import {
-  Button,
-  Container,
-  Row,
-  Col,
-} from "reactstrap";
+   Container,
+   Button,
+   } from "reactstrap";
 
-class AddMovie extends React.Component {
-  componentDidMount() {
-    document.body.classList.toggle("index-page");
-  }
-  componentWillUnmount() {
-    document.body.classList.toggle("index-page");
-  }
+class AddMovieHeader extends React.Component {
   render() {
     return (
-      <>
-        <IndexNavbar />
-        <div className="page-header header-filter">
-        <div className="squares square1" />
-        <div className="squares square2" />
-        <div className="squares square3" />
-        <div className="squares square4" />
-        <div className="squares square5" />
-        <div className="squares square6" />
-        <div className="squares square7" />
+      <div className="page-header header-filter">
         <Container>
           <div className="content-center brand">  
           <h3 className="d-none d-sm-block">
               Add a movie
             </h3>
           <Forms />  
-          <Row>
-            <Col>
           <Button
                 className="btn-simple btn-round"
                 color="primary"
@@ -61,25 +42,12 @@ class AddMovie extends React.Component {
                 // tag={Link}
               >
                 Add Movie
-              </Button>    
-              </Col> 
-              <Col>
-          <Button
-                className="btn-simple btn-round"
-                color="primary"
-                to="/"
-                tag={Link}
-              >
-                Home
-              </Button>    
-              </Col> 
-              </Row>
+              </Button>     
           </div>
         </Container>
       </div>
-      </>
     );
   }
 }
 
-export default AddMovie;
+export default AddMovieHeader;

@@ -33,7 +33,6 @@ import {
   Modal,
   Col,
   FormGroup,
-  Label,
   Input,
   InputGroup,
   InputGroupAddon,
@@ -61,11 +60,13 @@ class ComponentsNavbar extends React.Component {
       signin: false,
       register: false,
       hidden: true,
-      alertvisible: false,      
-      signInHidden: false,
-      registerHidden: false,
-      showUsername: true,      
-      logOutHidden: true,
+      alertvisible: false,     
+      /* Local storage variables for saving session */ 
+      signInHidden: localStorage.getItem('signInHidden') ? true: false,
+      registerHidden: localStorage.getItem('registerHidden') ? true: false,
+      welcomeHidden: localStorage.getItem('welcomeHidden') ? false: true,      
+      logOutHidden: localStorage.getItem('logOutHidden') ? false: true,
+      adminAddMovieHidden: localStorage.getItem('adminAddMovieHidden') ? false: true,
       /* Non-binary state variables*/
       color: "navbar-transparent",
       username: "",
@@ -89,6 +90,10 @@ class ComponentsNavbar extends React.Component {
       alerttext: ""
     });
   }
+  /* Clears the local storage cache */
+  clearStorage(e) {
+    localStorage.clear();
+  }
   /* Functions to change states in forms */
   onChangeUsername(e) {
     this.setState({
@@ -110,87 +115,182 @@ class ComponentsNavbar extends React.Component {
       passwordconfirm: e.target.value
     })
   }
+
+  componentDidMount() {
+    window.addEventListener("scroll", this.changeColor);
+    const signedInUser = localStorage.getItem('signedInUser');
+    this.setState({signedInUser});
+ 
+  }
+
   /* Function that runs when register form is submitted.
      Makes the Axios call and does what it needs to based on 
      the response from the .php page*/
   onSubmitRegister(e) {
     e.preventDefault();
+    this.setState({
+      alertvisible: false
+    });
+    //if the username is blank, show an error
+    if(this.state.username === "")
+    {
+      this.setState({
+        alerttext: "Username field blank. Please try again.",
+        alertvisible: true,
+        password: "",
+        passwordconfirm: ""
+      });
+      return;
+    }
+    //if the email is blank, show an error
+    if(this.state.email === "")
+    {
+      this.setState({
+        alerttext: "Email field blank. Please try again.",
+        alertvisible: true,
+        password: "",
+        passwordconfirm: ""
+      });
+      return;
+    }
+    //if the password is blank, show an error
+    if(this.state.password === "")
+    {
+      this.setState({
+        alerttext: "Password field blank. Please try again.",
+        alertvisible: true,
+        password: "",
+        passwordconfirm: ""
+      });
+      return;
+    }    
+    //if the password and password confirm don't match, show an error
+    if(this.state.password !== this.state.passwordconfirm)
+    {
+      this.setState({
+        alerttext: "Password not confirmed. Please try again.",
+        alertvisible: true,
+        password: "",
+        passwordconfirm: ""
+      });
+      return;
+    }    
+    // if none of the other errors showed and the passwords match up, 
     if(this.state.password === this.state.passwordconfirm)
     {
+      //create the object to send to the php page
     const reg = {
       regusername: this.state.username,
       regemail: this.state.email,
       regpassword: this.state.password,
       regpasswordconfirm: this.state.passwordconfirm
     };
-
+    /* axios call to the register.php page 
+    https://cors-anywhere.herokuapp.com/ is used for testing but isn't used when hosted since the hosting and database
+    are in the same location
+    */
     Axios
-     .post("https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/register", reg)
-     .then(function(response){
+     .post("http://thomasjohnoleary.com/notimdb/register", reg)
+     .then(response => {
        console.log(response); 
+       this.setState({
+        alerttext: response.data,
+        alertvisible: true,
+        username: "",
+        email: "",
+        password: "",
+        passwordconfirm: ""
+      }); 
    })
-     .catch(function (error) {
-     console.log(error); 
-     })
- 
-     this.setState({
-       alerttext: "Successfully registered. Please sign in.",
+     .catch(error => {
+      console.log(error); 
+      this.setState({
+       alerttext: error.data,
        alertvisible: true,
        username: "",
        email: "",
        password: "",
        passwordconfirm: ""
-     });    
-  }
-  if(this.state.password !== this.state.passwordconfirm)
-  {
-    this.setState({
-      alerttext: "Password not confirmed. Please try again.",
-      alertvisible: true,
-      password: "",
-      passwordconfirm: ""
-    })
+     }); 
+  })
   }
 }
 
 /* Function that runs when the sign-in form is submitted
    Makes the Axios call and upon success hides the buttons in the nav bar
-   for register/sign-in and replaces it with the username welcome text*/
+   for register/sign-in and replaces it with the username welcome text
+   https://cors-anywhere.herokuapp.com/ is used for testing but isn't used when hosted since the hosting and database
+   are in the same location
+    */
 onSignIn(e) {
   e.preventDefault();
-
+  // if the username field is blank, throw an error and return
+  if(this.state.username === "")
+    {
+      this.setState({
+        alerttext: "Username field blank. Please try again.",
+        alertvisible: true,
+        password: "",
+        passwordconfirm: ""
+      });
+      return;
+    }
+    // if the password field is blank throw an error and return
+    if(this.state.password === "")
+    {
+      this.setState({
+        alerttext: "Password field blank. Please try again.",
+        alertvisible: true,
+        password: "",
+        passwordconfirm: ""
+      });
+      return;
+    }
   const signin = {
     signinname: this.state.username,
     signinpassword: this.state.password
   };
-
+  /* https://cors-anywhere.herokuapp.com/ */
   Axios
-   .post("https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/signin", signin)
+   .post("http://thomasjohnoleary.com/notimdb/signin", signin)
    .then(result => {
+    // set localstorage on successful sign in
+    localStorage.setItem('signedInUser', result.data);
+    localStorage.setItem('signInHidden', true);
+    localStorage.setItem('registerHidden', true);
+    localStorage.setItem('welcomeHidden', false);
+    localStorage.setItem('logOutHidden', false);
+    console.log("Local storage user");
+    console.log(localStorage.getItem('signedInUser'));
      this.setState({     
                 signedInUser: result.data,           
                 signInHidden: true,
                 registerHidden: true,
-                showUsername: false
+                welcomeHidden: false,
+                logOutHidden: false
                 }); 
-                this.toggleModal("signin");   
+    // if the signed in user is an admin show the add movie button
+    if (this.state.signedInUser === 'admin')
+    {
+      localStorage.setItem('adminAddMovieHidden', false);
+      this.setState({
+        adminAddMovieHidden: false
+      });
+    }
+    //close the modal after a successful sign in
+    this.toggleModal("signin");   
  })
+  //if the sign in fails throw an error message
    .catch(error => {
    console.log(error); 
    this.setState({                
-                alerttext: "Invalid Login",
+                alerttext: "Invalid username or password",
                 alertvisible:"true"
                 });
    }) 
 }
-  
-  componentDidMount() {
-    window.addEventListener("scroll", this.changeColor);
-  }
-  /* componentWillUnmount() {
-    window.removeEventListener("scroll", this.changeColor);
-  } */
 
+  //template function
   changeColor = () => {
     if (
       document.documentElement.scrollTop > 99 ||
@@ -208,29 +308,34 @@ onSignIn(e) {
       });
     }
   };
+  //template function
   toggleCollapse = () => {
     document.documentElement.classList.toggle("nav-open");
     this.setState({
       collapseOpen: !this.state.collapseOpen
     });
   };
+  //template function
   onCollapseExiting = () => {
     this.setState({
       collapseOut: "collapsing-out"
     });
   };
+  //template function
   onCollapseExited = () => {
     this.setState({
       collapseOut: ""
     });
   };
+  //template function
   scrollToDownload = () => {
     document
       .getElementById("download-section")
       .scrollIntoView({ behavior: "smooth" });
   };
+
   render() {
-    return (
+    return (      
       <Navbar
         className={"fixed-top " + this.state.color}
         color-on-scroll="100"
@@ -255,7 +360,7 @@ onSignIn(e) {
               <span className="navbar-toggler-bar bar1" />
               <span className="navbar-toggler-bar bar2" />
               <span className="navbar-toggler-bar bar3" />
-            </button>
+            </button>           
           </div>
           <Collapse
             className={"justify-content-end " + this.state.collapseOut}
@@ -501,20 +606,38 @@ onSignIn(e) {
             </Modal>
               {/* Register Modal end */}
               </NavItem>
-              <Container hidden={this.state.showUsername}>
-            <span className="navbar-text">
+              <NavItem hidden={this.state.welcomeHidden}>
+              <Container hidden={this.state.welcomeHidden}>
+            <span className="navbar-text" hidden={this.state.welcomeHidden}>
               Welcome, {this.state.signedInUser}!
             </span>
           </Container>
+          </NavItem>
+          <NavItem hidden={this.state.adminAddMovieHidden}>
+                <Button                 
+                  className="nav-link d-none d-lg-block"
+                  color="default"
+                  to="add-movie"
+              rel="noopener noreferrer"
+              title="Add Movie"
+              tag={Link}
+                >
+                  <i className="tim-icons icon-tap-02" /> Add Movie
+                </Button>              
+            </NavItem>
           <NavItem hidden={this.state.logOutHidden}>
                 <Button                 
                   className="nav-link d-none d-lg-block"
                   color="default"
-                  onClick={() => this.toggleModal("signin")}
+                  onClick={() => this.clearStorage()}
+                  to="/"
+              rel="noopener noreferrer"
+              title="I Can't Believe it's not IMDB"
+              tag={Link}
                 >
                   <i className="tim-icons icon-tap-02" /> Log Out
                 </Button>              
-            </NavItem>
+            </NavItem>            
             </Nav>
           </Collapse>
         </Container>

@@ -18,6 +18,7 @@ $passwordconfirm = $request -> regpasswordconfirm;
 
 $sqlusercheck ="SELECT userName from User WHERE userName = '$username'";
 
+$sqlemailcheck ="SELECT userEmail from User WHERE userEmail = '$email'";
 /* Check if the username already exists */
 $usernamecheck = mysqli_query($con, $sqlusercheck);
     
@@ -26,31 +27,42 @@ $usernamecheck = mysqli_query($con, $sqlusercheck);
                                   {  
                                     
                                         $dbusername = $row["userName"];  
-                                        $dbpassword = $row["userPassword"]; 
                                   }  
 if($username == $dbusername)
 {
-    $return = "Username Already Exists";
-    // http_response_code(422);
+    $return = array("message"=>"Username Already Exists", "username"=>"false");
     echo json_encode($return);
     exit;
 }
-
+$useremailcheck = mysqli_query($con, $sqlemailcheck);
+    
+        /* Get and sanitize the data if the SQL statement was valid */
+        while($row = mysqli_fetch_array($useremailcheck))  
+                                  {  
+                                    
+                                        $dbemail = $row["userEmail"];  
+                                  }  
+if($email == $dbemail)
+{
+    $return = array("message"=>"Email Already Exists", "username"=>"false");;
+    echo json_encode($return);
+    exit;
+}
 /* Insert user if user info valid */
 $sql = "INSERT INTO User (userID, userName, userPassword, userEmail) values (NULL, '$username', '$password', '$email')";
 
 
 if (mysqli_query($con, $sql))
     {
-        $return = "Successfully Registered. Please sign in";
+        $return = array("message"=>"Registered Successfully", "username"=>$username);
         http_response_code(201);
         echo json_encode($return);
         
     }
         else 
     {
-        $return = "There was an error during registration. Try again.";
-        // http_response_code(422);
+        $return = array("message"=>"There was an error during registration", "username"=>"false");
+        http_response_code(422);
         echo json_encode($return);
     }
 }

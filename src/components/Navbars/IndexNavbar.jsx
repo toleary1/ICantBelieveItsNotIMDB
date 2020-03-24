@@ -191,16 +191,35 @@ class ComponentsNavbar extends React.Component {
     */
     Axios
      .post("http://thomasjohnoleary.com/notimdb/register", reg)
-     .then(response => {
-       console.log(response); 
-       this.setState({
-        alerttext: response.data,
-        alertvisible: true,
-        username: "",
-        email: "",
-        password: "",
-        passwordconfirm: ""
-      }); 
+     .then(response => {    
+       console.log(response.data.message);
+       console.log(response.data.username);  
+       if (response.data.username === "false")
+       {
+        this.setState({
+          alerttext: response.data.message,
+          alertvisible: true,
+          username: "",
+          email: "",
+          password: "",
+          passwordconfirm: ""
+        }); 
+        return;
+       }
+        // set localstorage on successful register
+        localStorage.setItem('signedInUser', response.data.username);
+        localStorage.setItem('signInHidden', true);
+        localStorage.setItem('registerHidden', true);
+        localStorage.setItem('welcomeHidden', false);
+        localStorage.setItem('logOutHidden', false);
+         this.setState({     
+                    signedInUser: response.data.username,           
+                    signInHidden: true,
+                    registerHidden: true,
+                    welcomeHidden: false,
+                    logOutHidden: false
+                    }); 
+                    this.toggleModal("register");
    })
      .catch(error => {
       console.log(error); 
@@ -260,8 +279,6 @@ onSignIn(e) {
     localStorage.setItem('registerHidden', true);
     localStorage.setItem('welcomeHidden', false);
     localStorage.setItem('logOutHidden', false);
-    console.log("Local storage user");
-    console.log(localStorage.getItem('signedInUser'));
      this.setState({     
                 signedInUser: result.data,           
                 signInHidden: true,

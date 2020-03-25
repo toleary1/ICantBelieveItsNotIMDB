@@ -22,23 +22,12 @@ import Axios from "axios";
 
 // reactstrap components
 import {
-  Button,
-  Collapse,
-  NavbarBrand,
-  Navbar,
-  NavItem,
-  Nav,
-  Container,
-  Row,
-  Modal,
-  Col,
-  FormGroup,
-  Input,
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  Form,
-  Alert
+  Button, Collapse, NavbarBrand,
+  Navbar, NavItem, Nav,
+  Container, Row, Modal,
+  Col, FormGroup, Input,
+  InputGroup, InputGroupAddon, InputGroupText,
+  Form, Alert, NavLink
 } from "reactstrap";
 
 class ComponentsNavbar extends React.Component {
@@ -387,10 +376,11 @@ onSignIn(e) {
             onExited={this.onCollapseExited} 
           >
             <div className="navbar-collapse-header">
+            <Nav>
               <Row>
-                <Col className="collapse-brand" xs="6">
+              <Col className="collapse-brand" xs="6">
                   <a href="#pablo" onClick={e => e.preventDefault()}>
-                    BLK•React
+                    I Can't Believe It's Not IMDB
                   </a>
                 </Col>
                 <Col className="collapse-close text-right" xs="6">
@@ -401,27 +391,24 @@ onSignIn(e) {
                   >
                     <i className="tim-icons icon-simple-remove" />
                   </button>
-                </Col>
+                </Col>               
               </Row>
+              </Nav>
             </div>
             <Nav navbar>              
-              <NavItem hidden={this.state.registerHidden}>
-                <Button                  
-                  className="nav-link d-none d-lg-block"
-                  color="info"
-                  onClick={() => this.toggleModal("register")}
-                >
-                  <i className="tim-icons icon-bell-55" /> Register
-                </Button>
+              <NavItem hidden={this.state.registerHidden}>               
+                <NavLink                                     
+                onClick={() => this.toggleModal("register")}
+                 >
+                Register
+                </NavLink>              
               </NavItem>
               <NavItem hidden={this.state.signInHidden}>
-                <Button                 
-                  className="nav-link d-none d-lg-block"
-                  color="info"
-                  onClick={() => this.toggleModal("signin")}
-                >
-                  <i className="tim-icons icon-tap-02" /> Sign In
-                </Button>
+              <NavLink                                     
+                onClick={() => this.toggleModal("signin")}
+                 >
+                Sign In
+                </NavLink>
                 <NavItem>                
             </NavItem>
             {/* Sign-in Modal start*/}
@@ -624,41 +611,36 @@ onSignIn(e) {
               {/* Register Modal end */}
               </NavItem>
               <NavItem hidden={this.state.welcomeHidden}>
-              <Container hidden={this.state.welcomeHidden}>
-            <span className="navbar-text" hidden={this.state.welcomeHidden}>
+            <span className="navbar-text">
               Welcome, {this.state.signedInUser}!
             </span>
-          </Container>
           </NavItem>
           <NavItem hidden={this.state.adminAddMovieHidden}>
-                <Button                 
-                  className="nav-link d-none d-lg-block"
-                  color="default"
+                <NavLink                   
                   to="add-movie"
               rel="noopener noreferrer"
               title="Add Movie"
               tag={Link}
                 >
-                  <i className="tim-icons icon-tap-02" /> Add Movie
-                </Button>              
+                Add Movie
+                </NavLink>              
             </NavItem>
           <NavItem hidden={this.state.logOutHidden}>
-                <Button                 
-                  className="nav-link d-none d-lg-block"
-                  color="default"
+                <NavLink
                   onClick={() => this.clearStorage()}
                   to="/"
               rel="noopener noreferrer"
               title="I Can't Believe it's not IMDB"
               tag={Link}
                 >
-                  <i className="tim-icons icon-tap-02" /> Log Out
-                </Button>              
-            </NavItem>            
+                  Log Out
+                </NavLink>              
+            </NavItem>           
             </Nav>
-          </Collapse>
+          </Collapse>          
         </Container>
       </Navbar>
+      
     );
   }
 }

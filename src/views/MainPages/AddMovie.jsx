@@ -15,22 +15,26 @@
 * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
 */
+
+/*
+Info on making dynamic input: https://itnext.io/building-a-dynamic-controlled-form-in-react-together-794a44ee552c
+*/
+import {withRouter} from 'react-router-dom';
 import React from "react";
 import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
-import Axios from "axios";
-
+import axios from "axios";
+import Genre from "components/Genre.jsx";
 // reactstrap components
 import {
   Button,
   Container,
   Row,
-  Col,
   FormGroup,
   Label,
   Input,
   Card,
   CardBody,
-  Alert
+  Col
 } from "reactstrap";
 import Datetime from "react-datetime";
 var max_chars = 500;
@@ -40,8 +44,16 @@ const textareastyle = {
 }
 
 class AddMovie extends React.Component {
-  componentDidMount() {
-    document.body.classList.toggle("index-page");
+  state = {
+    mtitle: "",
+    moviesynopsis: "",
+    moviereleasedate: "", 
+    moviegenre: "",  
+    alerttext: "",
+    alertvisible: false,    
+    cast: [{FirstName: "", LastName: "", Role: ""}],              
+    genres: [],
+    image: null     
   }
 
   constructor(props)
@@ -50,17 +62,12 @@ class AddMovie extends React.Component {
     this.onChangeMovieTitle = this.onChangeMovieTitle.bind(this);
     this.onChangeMovieSynopsis = this.onChangeMovieSynopsis.bind(this);
     this.onChangeMovieReleaseDate = this.onChangeMovieReleaseDate.bind(this);
+    this.onChangeGenre = this.onChangeGenre.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.charactersLeft = this.charactersLeft.bind(this);
 
-    this.state = {mtitle: "",
-                  moviesynopsis: "",
-                  moviereleasedate: "",   
-                  alerttext: "",
-                  alertvisible: false,
-                  value:""         
-            };
-  }
+  } 
+
   onChangeMovieTitle(e) {
     this.setState({
       mtitle: e.target.value
@@ -71,16 +78,44 @@ class AddMovie extends React.Component {
       moviesynopsis: e.target.value
     });
   }
-  onChangeMovieReleaseDate(e) {
-    this.setState({
-      moviereleasedate: e.target.value
-    });
-  }
   
+  onChangeGenre(e) {
+    this.setState({
+      moviegenre: e.target.value
+    })
+  }
   charactersLeft(event) {
     var input = event.target.value;
     this.setState({
-      chars_left: max_chars - input.length
+      chars_left: max_chars - input.length,
+      moviesynopsis: event.target.value
+    });
+  }
+
+  componentDidMount() {
+    const signedInUser = localStorage.getItem('signedInUser');
+    if(signedInUser !== "admin")
+      {
+        this.props.history.push("/");
+      }
+    
+    document.body.classList.toggle("index-page");
+    axios
+    .get(
+      "http://thomasjohnoleary.com/notimdb/listgenres"
+    )
+    .then(genreresponse => {
+      console.log(genreresponse.data);
+      //sets the database response into the array
+      this.setState({genres: genreresponse.data});
+    })
+    .catch(function (error) { 
+      console.log(error);
+    })
+  }
+  GenreList () {
+    return this.state.genres.map(function (object, i) {
+      return <Genre obj={object} key={i} />
     });
   }
   onSubmit(e) {
@@ -88,12 +123,16 @@ class AddMovie extends React.Component {
 
    const obj = {
      objmovietitle: this.state.mtitle,
-     moviesynopsis: this.state.moviesynopsis,
-     moviereleasedate: this.state.moviereleasedate
+     objmoviesynopsis: this.state.moviesynopsis,
+     objmoviereleasedate: this.state.moviereleasedate,
+     objmoviegenre: this.state.moviegenre,
+     objcast: this.state.cast
+
    };
    console.log(obj);
-   Axios
-    .post("https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/insertmovie", obj)
+   console.log(this.state.cast);
+   axios
+    .post("http://thomasjohnoleary.com/notimdb/insertmovie", obj)
     .then(function(response){
       console.log(response); 
   })
@@ -101,21 +140,64 @@ class AddMovie extends React.Component {
     console.log(error); 
     })
 
-    this.setState({
+   /* this.setState({
       alerttext: this.state.mtitle + " added successfully",
       alertvisible: true,
       mtitle: "",
       moviesynopsis: "",
-      moviereleasedate: "",
-    });      
+      moviereleasedate: "", 
+    });      */
+  }
+  onChangeMovieReleaseDate = (moment) => {
+    this.setState({
+      moviereleasedate: moment.toDate()
+    });
   }
 
   componentWillUnmount() {
     document.body.classList.toggle("index-page");
   }
+  handleChange = (e) => {
+    if (["FirstName", "LastName", "Role"].includes(e.target.placeholder) ) {
+      let cast = [...this.state.cast]
+      cast[e.target.dataset.id][e.target.placeholder] = e.target.value
+      this.setState({cast}, () => console.log(this.state.cast))
+    } 
+    else {
+      this.setState({ [e.target.name]: e.target.value })
+    }
+  }
+ 
+  addActor = (e) => {
+    this.setState((prevState) => ({
+      cast: [...prevState.cast, {FirstName:"", LastName:"", Role:"",}],
+    }));
+  }
+  handleImageSubmit = (e) => {
+    e.preventDefault();
+    console.log(this.state);
+    let form_data = new FormData();
+    form_data.append('image', this.state.image, this.state.image.name);
+    let url = "http://thomasjohnoleary.com/notimdb/upload";
+    axios.post(url, form_data, {
+    headers: {
+    'content-type': 'multipart/form-data'
+    }
+    })
+    .then(res => {
+    console.log(res.data);
+    })
+    .catch(err => console.log(err))
+    };
 
-
+    handleImageChange = (e) => {
+      this.setState({
+      image: e.target.files[0]
+      })
+      };
+     
   render() {
+    let {mtitle, moviereleasedate, cast, moviesynopsis} = this.state
     return (
       <>
         <IndexNavbar />
@@ -128,37 +210,39 @@ class AddMovie extends React.Component {
         <div className="squares square6" />
         <div className="squares square7" />
         <Container>
-          <div className="content-center brand" style={{width: "75%"}}>  
+          <div className="content-center brand" style={{width: "100%", overflow: "auto",  margintop: "300px"}}>  
           <h3 className="d-none d-sm-block">
               Add a movie
             </h3>
             <Card>
         <CardBody>
-          <form>
+          <form onSubmit={this.onSubmit} onChange={this.handleChange} >
             <div className="form-row">
               <FormGroup className="col-md-5">
                 <Label for="inputEmail4">Movie Title</Label>
-                <Input 
+                <Input
                 type="text"
-                name="movietitle"
+                name="mtitle"
                 id="mtitle"
                 placeholder="Movie Title"
-                value = {this.state.mtitle}
+                value = {mtitle}
                 onChange={this.onChangeMovieTitle}/>
               </FormGroup>
               <FormGroup className="col-md-3">
                 <Label for="inputPassword4">Release Date</Label>
-                <Input 
-                type="text"  
-                id="mdate" 
-                placeholder="Release Date"/>
+                <Datetime
+                name="moviereleasedate"
+                value={moviereleasedate}
+                onChange={moment => this.onChangeMovieReleaseDate(moment)}
+                dateFormat="YYYY-MM-DD"
+                timeFormat={false}
+                />
               </FormGroup>
               <FormGroup className="col-md-4">
                 <Label for="inputPassword4">Genre</Label>
-                <Input 
-                type="text"  
-                id="genre" 
-                placeholder="genre"/>
+                <Input type="select" name="moviegenre" onChange={this.onChangeGenre} style={{backgroundcolor: "default"}}>
+              {this.GenreList ()}
+               </Input>
               </FormGroup>
             </div>
             <FormGroup>
@@ -169,52 +253,84 @@ class AddMovie extends React.Component {
               name="moviesynopsis"
               id="exampleText"
               placeholder="Movie Synopsis" 
-              classname = "form-control"
-              multiline = {true}
+              className="moviesynopsis"
+              value={moviesynopsis}
               maxLength = {500}               
               style = {textareastyle} 
               onChange={this.charactersLeft}/>
             </FormGroup>
             <Label for = "addactor" style={{margin: "15px"}}>Add an Actor</Label>
-            <div className="form-row">              
-              <FormGroup className="col-md-4">
-                <Label for="firstname">First Name</Label>
-                <Input 
+            
+              {
+              cast.map((val, idx) => {
+                  let firstID = `FirstName-${idx}`, lastID = `LastName-${idx}`, roleID = `Role-${idx}`
+                  return(  
+                <div key={idx}>
+                  <Row>
+                    <Col xs="0">
+                    <Label style={{fontSize: "1.2em"}}>#{idx + 1}</Label>
+                    </Col>
+                    <Col>
+                <FormGroup>
+                <Input
                 type="text"  
-                name = "firstname" 
-                id="firstname"
-                placeholder="First Name"/>
-              </FormGroup>
-              <FormGroup className="col-md-4">
-                <Label for="lastname">Last Name</Label>
-                <Input 
+                name = {firstID}
+                data-id={idx}
+                id={firstID}
+                value={cast[idx].FirstName}                                             
+                placeholder="FirstName"/>
+                </FormGroup>
+                </Col>
+                <Col>
+                <FormGroup>
+                <Input
                 type="text" 
-                name="lastname" 
-                id="lastname"
-                placeholder="Last Name" >
-                </Input>
-              </FormGroup>
-              <FormGroup className="col-md-4">
-                <Label for="role">Role</Label>
-                <Input 
+                name = {lastID}
+                data-id={idx}
+                id={lastID}
+                value={cast[idx].LastName}                            
+                placeholder="LastName" />
+                </FormGroup>
+                </Col>
+                <Col>
+                <FormGroup>
+                <Input
                 type="text"  
-                name="role"
-                id="role"
+                name = {roleID}
+                data-id={idx}
+                id={roleID}
+                value={cast[idx].role}                
                 placeholder="Role"/>
               </FormGroup>
-            </div>
-            <Button type="submit" color="primary">Add Movie</Button>
-            <Button type="button" color="primary">Add Another Actor</Button>
-            <Button type="button" color="primary">Upload Movie Poster</Button>
+              </Col>
+              </Row>
+              </div>  
+                )
+              })
+            }               
+            <Button color="primary" onClick={this.addActor} >Add Another Actor</Button>  
+           
+            <div className="text-center">
+            <Button  type="submit" color="primary">Add Movie</Button>  
+            </div>            
           </form>
+          <div className="text-center" style={{margin: "20px"}}> 
+          <form onSubmit={this.handleImageSubmit}>     
+          <Label>Upload A Movie Poster</Label>            
+          <input type="file" className="form-control"
+ id="image"
+ accept="image/png, image/jpeg" onChange={this.handleImageChange} required/>
+            <Button type="submit" color="primary">Upload Poster</Button>            
+            </form>
+            </div>
         </CardBody>
       </Card>
           </div>
         </Container>
       </div>
       </>
-    );
+    )
   }
 }
 
-export default AddMovie;
+export default withRouter(AddMovie);

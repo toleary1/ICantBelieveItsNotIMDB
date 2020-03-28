@@ -16,10 +16,10 @@
 
 */
 import React from "react";
-import { Link } from "react-router-dom";
-
-// core components
+//import { Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
+import ScrollToTopRoute from "components/ScrollToTopRoute.jsx";
 
 import {
   Container,
@@ -76,17 +76,7 @@ class Index extends React.Component {
               >
                 List Movies
               </Button>
-              </Col>
-              <Col>
-              <Button
-                className="btn-simple btn-round"
-                color="primary"
-                to="movie-page"
-                tag={Link}
-              >
-                Movie Page
-              </Button>
-              </Col>
+              </Col>              
               </Row>
               <br></br>
               <h3 className="d-none d-sm-block">

@@ -27,9 +27,9 @@ import ListMovies from "views/MainPages/ListMovies.jsx";
 import MoviePage from "views/MainPages/MoviePage.jsx";
 
 ReactDOM.render(
-  <HashRouter>
+  <HashRouter onUpdate={() => window.scrollTo(0, 0)}>
     <Switch>
-      <Route path="/components" render={props => <Index {...props} />} />      
+      <Route path="/components" render={props => <ListMovies {...props} />} />      
       <Route
         path="/add-movie"
         render={props => <AddMovie {...props} />}
@@ -38,7 +38,7 @@ ReactDOM.render(
         path="/list-movies"
         render={props => <ListMovies {...props} />}
       />
-      <Route
+      <Route onUpdate={() => window.scrollTo(0, 0)}
         path="/movie-page"
         render={props => <MoviePage {...props} />}
       />
@@ -47,3 +47,4 @@ ReactDOM.render(
   </HashRouter>,
   document.getElementById("root")
 );
+

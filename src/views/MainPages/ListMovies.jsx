@@ -16,20 +16,45 @@
 
 */
 import React from "react";
-
+import axios from "axios";
 import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
+import Movie from "components/Movie.jsx";
 
 // reactstrap components
 import {
   Container,
-  Row,
-  Col,
 } from "reactstrap";
 
 class ListMovies extends React.Component {
+constructor(props) {
+  super(props);
+  this.state = { movies: [] };
+                 
+}
 
   componentDidMount() {
     document.body.classList.toggle("profile-page");
+    // Axios get that pulls the movies from the listmovies.php file and fills the movies array
+    // with the database response
+    axios
+    .get(
+      "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/listmovies"
+    )
+    .then(response => {
+      //sets the database response into the array
+      this.setState({movies: response.data});
+    })
+    .catch(function (error) { 
+      console.log(error);
+    })
+  }
+
+  // function that maps through the array and runs the Movie component for each index
+  // populating the movie list
+  MovieList () {
+    return this.state.movies.map(function (object, i) {
+      return <Movie obj={object} key={i} />
+    });
   }
   componentWillUnmount() {
     document.body.classList.toggle("profile-page");
@@ -40,88 +65,18 @@ class ListMovies extends React.Component {
         <IndexNavbar />
         <div className="wrapper">
           <div className="page-header">
-            <img
-              alt="..."
-              className="dots"
-              src={require("assets/img/dots.png")}
-            />
-            <img
-              alt="..."
-              className="path"
-              src={require("assets/img/path4.png")}
-            />
-            <Container>
             <div className="content-center brand">
-            <h1 className="h1-seo">All Movies</h1>
+            <h1 className="h1-seo">I Can't Believe It's Not IMDB</h1>
             <h3 className="d-none d-sm-block">
-              Here's all the movies we have.              
-            </h3>
-            <h3 className="d-none d-sm-block">
-              At least here's an idea of what it will look like. Let's call it a template.            
+              All Movies            
             </h3>
             </div>
-            </Container>
-            </div>
-            
-            <div className="section">
+            </div>            
+            <div className="section" style={{padding: "0px"}}>
             <Container className="align-items-center">
-              <Row>
-                <Col lg="6" md="6">
-                  <h1 className="profile-title text-left">Blade Runner 2049</h1>
-                  <h5 className="text-on-back">01</h5>                  
-                  <div className="btn-wrapper profile pt-3"> 
-                  <p className="profile-description">
-                  Young Blade Runner "K"'s (Ryan Gosling's) discovery of a long-buried secret leads him to track down former Blade Runner Rick Deckard (Harrison Ford), who's been missing for thirty years.
-                  </p>                        
-                  </div>
-                </Col>
-                <Col className="ml-auto mr-auto" lg="4" md="6"> 
-                <img
-              alt="..."
-              className=" "
-              src={require("assets/img/movieposter.jpeg")}
-            />               
-                </Col>
-              </Row>
-              <Row>
-                <Col lg="6" md="6">
-                  <h1 className="profile-title text-left">Metropolis</h1>
-                  <h5 className="text-on-back">02</h5>                  
-                  <div className="btn-wrapper profile pt-3"> 
-                  <p className="profile-description">
-                  In a futuristic city sharply divided between the working class and the city planners, the son of the city's mastermind falls in love with a working class prophet who predicts the coming of a savior to mediate their differences.
-                  </p>                        
-                  </div>
-                </Col>
-                <Col className="ml-auto mr-auto" lg="4" md="6"> 
-                <img
-              alt="..."
-              className=" "
-              src={require("assets/img/Metropolis.jpg")}
-            />               
-                </Col>
-              </Row>
-              <Row>
-                <Col lg="6" md="6">
-                  <h1 className="profile-title text-left">Ruby Sparks</h1>
-                  <h5 className="text-on-back">03</h5>                  
-                  <div className="btn-wrapper profile pt-3"> 
-                  <p className="profile-description">
-                  A novelist struggling with writer's block finds romance in a most unusual way: by creating a female character he thinks will love him, then willing her into existence.
-                  </p>                        
-                  </div>
-                </Col>
-                <Col className="ml-auto mr-auto" lg="4" md="6"> 
-                <img
-              alt="..."
-              className=" "
-              src={require("assets/img/RubySparks.jpg")}
-            />               
-                </Col>
-              </Row>
+              {this.MovieList()}
               </Container>
-              </div>
-          
+              </div>          
           </div>
       </>
     );

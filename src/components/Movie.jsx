@@ -33,15 +33,7 @@ class Movie extends React.Component {
       this.setState({ imagepath: ""});
       this.setState({imagepath: `http://thomasjohnoleary.com/notimdb/static/media/${this.props.obj.movieName}.jpg`});
     }
-    /* 
-  <h6 className="text-on-back"><Link to= {{
-                pathname:"/movie-page",                
-                aboutProps:{
-                    movieName: this.props.obj.movieName,
-                    movieID: this.props.obj.movieID                      
-                }
-            }}>{this.props.obj.movieName.charAt()}</Link></h6>  
-    */
+
     render() {
        
         return (

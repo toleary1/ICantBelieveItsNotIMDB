@@ -16,11 +16,22 @@
 
 */
 import React from "react";
+<<<<<<< Updated upstream
 import { Link } from "react-router-dom";
 
 // core components
 import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
 
+=======
+//import { Link } from "react-router-dom";
+import { BrowserRouter as Link } from 'react-router-dom';
+import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
+/*
+import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
+import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
+import ScrollToTopRoute from "components/ScrollToTopRoute.jsx";
+*/
+>>>>>>> Stashed changes
 import {
   Container,
   Button,

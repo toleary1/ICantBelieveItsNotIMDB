@@ -17,15 +17,21 @@
 */
 import React from "react";
 import IndexNavbar from "components/Navbars/IndexNavbar.jsx";
+<<<<<<< Updated upstream
 import gosling from "assets/img/RyanGosling.jpg";
 import Harrison from "assets/img/HarrisonFord.jpg";
 import Ana from "assets/img/AnaDeArmas.jpg";
 import BladeRunner2049 from "assets/img/movieposter.jpeg";
 
+=======
+import axios from 'axios';
+import FillMoviePage from "components/FillMoviePage.jsx";
+import FillCastList from "components/FillCastList.jsx";
+import FillComments from "components/FillComments.jsx";
+>>>>>>> Stashed changes
 // reactstrap components
 import {
   Button,
-  Label,
   FormGroup,
   Input,
   Card,
@@ -35,6 +41,7 @@ import {
   Container,
   Row,
   Col,
+  Label
 } from "reactstrap";
 
 const imgstyle = {
@@ -49,11 +56,179 @@ const selectstyle = {
     background: 'black',
 }
 class MoviePage extends React.Component {
+<<<<<<< Updated upstream
     
+=======
+  constructor(props) {
+    super(props);
+    this.onChangeComment = this.onChangeComment.bind(this);
+    this.onSubmitComment = this.onSubmitComment.bind(this);
+    this.submitReview = this.submitReview.bind(this);
+    this.onChangeReview = this.onChangeReview.bind(this);
+  this.state = {
+    moviestate: "",
+    idstate: "",
+    comment: "",
+    commentalert: "",
+    review: 1,
+    alertvisible: false,
+    signedInUser: localStorage.getItem('signedInUser'),
+    movieinfomap: [],
+    commentmap: [],
+    reviewscoreaverage: ""    
+  }
+  }
+
+
+>>>>>>> Stashed changes
 componentDidMount() {
    
     document.body.classList.toggle("profile-page");
+<<<<<<< Updated upstream
     
+=======
+
+    //movie info axios post
+    const movieinfo = {
+      postmoviename: moviestate,
+      postmovieID: idstate
+    };
+    axios
+    .post(
+      "http://thomasjohnoleary.com/notimdb/moviepage", movieinfo
+    )
+    .then(response => {
+      console.log(response.data);
+      this.setState({movieinfomap: response.data});
+      console.log(this.state.movieinfomap);
+    })
+    .catch(function (error) { 
+      console.log(error);
+    }) 
+
+    //comment info axios post
+    const commentlist = {
+      commentmovieID: idstate
+    }; 
+    axios
+    .post(
+      "http://thomasjohnoleary.com/notimdb/listcomments", commentlist
+    )
+    .then(commentresponse => {
+      console.log(commentresponse.data);
+      this.setState({commentmap: commentresponse.data});
+      console.log(this.state.commentmap);
+    })
+    .catch(function (error) { 
+      console.log(error);
+    })   
+    const reviewscore = {
+      postmovieID: localStorage.getItem('idstate'),
+    };
+    axios
+    .post(
+      "http://thomasjohnoleary.com/notimdb/reviewscore", reviewscore
+    )
+    .then(response => {
+      console.log(response.data);
+      this.setState({reviewscoreaverage: response.data});
+    })
+    .catch(function (error) { 
+      console.log(error);
+    })  
+  }
+  
+
+  onSubmitComment (e) {
+    e.preventDefault();
+    if(this.state.signedInUser === null)
+    {
+      this.setState({
+        alertvisible: true,
+        commentalert: "You need to be signed in"
+      });
+      console.log("You need to be signed in");
+      return;
+    }
+    const idstate = localStorage.getItem('idstate');
+    //comment post axios
+    const commentinfo = {
+      postuser: this.state.signedInUser,
+      postmovieID: idstate,
+      postcomment: this.state.comment
+    };
+    console.log(commentinfo);
+    axios
+    .post(
+      "http://thomasjohnoleary.com/notimdb/submitcomment", commentinfo
+    )
+    .then(response => {
+      this.setState({
+        alertvisible: false,
+        commentalert: ""
+      });
+      console.log(response.data);
+      this.setState({commentinfo: response.data});
+      console.log(this.state.commentinfo);
+      window.location.reload(false);
+    })
+    .catch(function (error) { 
+      console.log(error);
+    })    
+  }
+
+  onChangeComment(e) {
+    this.setState({
+      comment: e.target.value
+    });
+  }
+
+  onChangeReview(e) {
+    this.setState({
+      review: e.target.value
+    })
+    console.log(this.state.review);
+  } 
+
+    submitReview (e) {
+      e.preventDefault();
+      if(this.state.signedInUser === null)
+      {
+        console.log("not signed in for review");
+        return;
+      }
+      const reviewinfo = {
+        postreview: this.state.review,
+        postmovieID: localStorage.getItem('idstate'),
+        postuser: this.state.signedInUser
+      };
+      axios
+      .post(
+        "http://thomasjohnoleary.com/notimdb/submitreview", reviewinfo
+      )
+      .then(response => {
+        console.log(response.data);
+      })
+      .catch(function (error) { 
+        console.log(error);
+      }) 
+    }
+  // .slice to get only the first index that has the movie information
+  MovieInfo () {
+    return this.state.movieinfomap.slice(0,1).map(function (object, i) {
+      return <FillMoviePage obj={object} key={i} />
+    });
+  }
+  CommentInfoFill () {
+    return this.state.commentmap.map(function (object, i) {
+      return <FillComments obj={object} key={i} />
+    });
+  }
+  CastInfo () {
+    return this.state.movieinfomap.map(function (object, i) {
+      return <FillCastList obj={object} key={i} />
+    });
+>>>>>>> Stashed changes
   }
   componentWillUnmount() {
     document.body.classList.toggle("profile-page");
@@ -85,6 +260,7 @@ componentDidMount() {
             </div>            
             <div className="section">
             <Container className="align-items-center">
+<<<<<<< Updated upstream
               <Row>                
                 <Col className="ml-auto mr-auto" lg="4" md="6"> 
                 <img
@@ -106,8 +282,34 @@ componentDidMount() {
                   </div>
                 </Col>
               </Row>              
+=======
+              {this.MovieInfo ()}                    
+>>>>>>> Stashed changes
               </Container>
-              </div>
+              </div> 
+              <div className="section">  
+              <Container className="align-items-center">       
+              <Row>
+                <Col lg="6" md="6">
+                <h4 className = "title text-left">Review Score: </h4>
+                <h4 className = "title text-left">{this.state.reviewscoreaverage}</h4>
+                </Col>
+            <Col lg="6" md="6" >
+            <Form onSubmit={this.submitReview}>
+              <Label for="inputPassword4">Review the Movie</Label>
+              <Input type="select" name="review" value={this.state.review} onChange={this.onChangeReview} style={{backgroundcolor: "default"}}>
+              <option style={{color: "black"}} value="1">1</option>
+              <option style={{color: "black"}} value="2">2</option>
+              <option style={{color: "black"}} value="3">3</option>
+              <option style={{color: "black"}} value="4">4</option>
+              <option style={{color: "black"}} value="5">5</option>
+            </Input>
+            <Button  type="submit" color="primary">Add Review</Button>
+            </Form>
+            </Col>
+              </Row>
+              </Container>  
+              </div>              
               <div className="section">
               <Container className="align-items-center">
               <Row> 
@@ -163,6 +365,7 @@ componentDidMount() {
                     <Row className="justify-content-md-center">
                     <h1 className="title text-center">Comments</h1>
                         </Row>
+<<<<<<< Updated upstream
                         <Row className="justify-content-md-center">
                             <blockquote>
                             <p class="blockquote blockquote-info">
@@ -184,6 +387,10 @@ componentDidMount() {
                             </blockquote>
                         </Row>
               <Row>
+=======
+                       {this.CommentInfoFill ()}
+              <Row className="justify-content-md-center">
+>>>>>>> Stashed changes
                 <Col md="6">
                   <Card className="card-plain">
                     <CardHeader>

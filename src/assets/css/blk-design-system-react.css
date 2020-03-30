@@ -11857,7 +11857,7 @@ textarea.form-control {
       text-align: left;
       padding-left: 20px; }
   .profile-page .profile-title {
-    position: absolute;
+    position: relative;
     top: 110px;
     left: 60px; }
   .profile-page .profile-description {

@@ -34,7 +34,8 @@ import {
   Input,
   Card,
   CardBody,
-  Col
+  Col,
+  Alert
 } from "reactstrap";
 import Datetime from "react-datetime";
 var max_chars = 500;
@@ -44,17 +45,7 @@ const textareastyle = {
 }
 
 class AddMovie extends React.Component {
-  state = {
-    mtitle: "",
-    moviesynopsis: "",
-    moviereleasedate: "", 
-    moviegenre: "",  
-    alerttext: "",
-    alertvisible: false,    
-    cast: [{FirstName: "", LastName: "", Role: ""}],              
-    genres: [],
-    image: null     
-  }
+
 
   constructor(props)
   {
@@ -65,8 +56,18 @@ class AddMovie extends React.Component {
     this.onChangeGenre = this.onChangeGenre.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.charactersLeft = this.charactersLeft.bind(this);
-
-  } 
+    this.state ={
+      image: null,   
+      moviegenre: "",
+      mtitle: "",
+      moviesynopsis: "",
+      moviereleasedate: "", 
+      alerthidden: true,
+      addmoviealert: "",
+      cast: [{FirstName: "", LastName: "", Role: ""}],  
+      genres: []
+    };
+  }
 
   onChangeMovieTitle(e) {
     this.setState({
@@ -113,40 +114,101 @@ class AddMovie extends React.Component {
       console.log(error);
     })
   }
+
   GenreList () {
     return this.state.genres.map(function (object, i) {
       return <Genre obj={object} key={i} />
     });
   }
-  onSubmit(e) {
-   e.preventDefault();
 
+  onSubmit(e) {
+    this.setState({
+      alerthidden: true,
+      addmoviealert: ""
+    })
+   e.preventDefault();
+    if(this.state.mtitle === "")
+    {
+      this.setState({
+        alerthidden: false,
+        addmoviealert: "Movie title field is blank"
+      })
+      return;
+    }
+    if(this.state.moviereleasedate === "")
+    {
+      this.setState({
+        alerthidden: false,
+        addmoviealert: "Release date field is blank"
+      })
+      return;
+    }
+    if(this.state.moviegenre === "")
+    {
+      this.setState({
+        alerthidden: false,
+        addmoviealert: "Movie genre field is blank"
+      })
+      return;
+    }
+    if(this.state.moviesynopsis === "")
+    {
+      this.setState({
+        alerthidden: false,
+        addmoviealert: "Movie synopsis field is blank"
+      })
+      return;
+    }
+    if(this.state.chars_left <= 0)
+    {
+      this.setState({
+        alerthidden: false,
+        addmoviealert: "Synopsis exceeds character limit"
+      })
+      return;
+    }
+    if(this.state.image !== null)
+    {
+    let form_data = new FormData();
+    form_data.append('image', this.state.image, this.state.image.name);
+    form_data.append('movietitle', this.state.mtitle);
+    let url = "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/upload";
+    axios.post(url, form_data, {
+    headers: {
+    'content-type': 'multipart/form-data'
+    }
+    })
+    .then(res => {
+    console.log(res.data);
+    })
+    .catch(err => console.log(err))
+    }
    const obj = {
      objmovietitle: this.state.mtitle,
      objmoviesynopsis: this.state.moviesynopsis,
      objmoviereleasedate: this.state.moviereleasedate,
      objmoviegenre: this.state.moviegenre,
      objcast: this.state.cast
-
    };
-   console.log(obj);
-   console.log(this.state.cast);
    axios
     .post("https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/insertmovie", obj)
     .then(function(response){
-      console.log(response); 
+      console.log(response);       
+      
   })
     .catch(function (error) {
     console.log(error); 
     })
-
-   /* this.setState({
-      alerttext: this.state.mtitle + " added successfully",
-      alertvisible: true,
-      mtitle: "",
-      moviesynopsis: "",
-      moviereleasedate: "", 
-    });      */
+    this.setState({
+      alerthidden: false,
+      addmoviealert: "Movie added successfully",
+      mtitle:"",
+      moviereleasedate:"",
+      moviegenre:"",
+      moviesynopsis:"",
+      image: null,
+      cast: [{FirstName: "", LastName: "", Role: ""}],
+    });
   }
   onChangeMovieReleaseDate = (moment) => {
     this.setState({
@@ -173,31 +235,18 @@ class AddMovie extends React.Component {
       cast: [...prevState.cast, {FirstName:"", LastName:"", Role:"",}],
     }));
   }
-  handleImageSubmit = (e) => {
-    e.preventDefault();
-    console.log(this.state);
-    let form_data = new FormData();
-    form_data.append('image', this.state.image, this.state.image.name);
-    let url = "http://thomasjohnoleary.com/notimdb/upload";
-    axios.post(url, form_data, {
-    headers: {
-    'content-type': 'multipart/form-data'
-    }
-    })
-    .then(res => {
-    console.log(res.data);
-    })
-    .catch(err => console.log(err))
-    };
-
+  
     handleImageChange = (e) => {
       this.setState({
       image: e.target.files[0]
       })
       };
-     
+      
+      clearForm() {
+        window.location.reload();
+      }
   render() {
-    let {mtitle, moviereleasedate, cast, moviesynopsis} = this.state
+    let {cast} = this.state
     return (
       <>
         <IndexNavbar />
@@ -210,12 +259,14 @@ class AddMovie extends React.Component {
         <div className="squares square6" />
         <div className="squares square7" />
         <Container>
-          <div className="content-center brand" style={{width: "100%", overflow: "auto",  margintop: "300px"}}>  
+          <div className="content-center brand" style={{display: "block", width: "100%", overflow: "auto",  margintop: "300px"}}>  
+          <Card>
+        <CardBody>
           <h3 className="d-none d-sm-block">
               Add a movie
             </h3>
-            <Card>
-        <CardBody>
+            <Alert color="danger" hidden={this.state.alerthidden}>{this.state.addmoviealert}</Alert>
+            
           <form onSubmit={this.onSubmit} onChange={this.handleChange} >
             <div className="form-row">
               <FormGroup className="col-md-5">
@@ -225,14 +276,15 @@ class AddMovie extends React.Component {
                 name="mtitle"
                 id="mtitle"
                 placeholder="Movie Title"
-                value = {mtitle}
+                value = {this.state.mtitle}
                 onChange={this.onChangeMovieTitle}/>
               </FormGroup>
               <FormGroup className="col-md-3">
                 <Label for="inputPassword4">Release Date</Label>
                 <Datetime
+                style={{color: "black"}}
                 name="moviereleasedate"
-                value={moviereleasedate}
+                value={this.state.moviereleasedate}
                 onChange={moment => this.onChangeMovieReleaseDate(moment)}
                 dateFormat="YYYY-MM-DD"
                 timeFormat={false}
@@ -241,6 +293,7 @@ class AddMovie extends React.Component {
               <FormGroup className="col-md-4">
                 <Label for="inputPassword4">Genre</Label>
                 <Input type="select" name="moviegenre" onChange={this.onChangeGenre} style={{backgroundcolor: "default"}}>
+                <option style={{color: "black"}} value=""></option>
               {this.GenreList ()}
                </Input>
               </FormGroup>
@@ -254,13 +307,13 @@ class AddMovie extends React.Component {
               id="exampleText"
               placeholder="Movie Synopsis" 
               className="moviesynopsis"
-              value={moviesynopsis}
+              value={this.state.moviesynopsis}
               maxLength = {500}               
               style = {textareastyle} 
               onChange={this.charactersLeft}/>
             </FormGroup>
-            <Label for = "addactor" style={{margin: "15px"}}>Add an Actor</Label>
-            
+            <div style={{height: "150px", overflowX: "hidden", overflowY: "scroll"}}>
+            <Label for = "addactor" style={{margin: "15px"}}>Add an Actor</Label> 
               {
               cast.map((val, idx) => {
                   let firstID = `FirstName-${idx}`, lastID = `LastName-${idx}`, roleID = `Role-${idx}`
@@ -271,7 +324,8 @@ class AddMovie extends React.Component {
                     <Label style={{fontSize: "1.2em"}}>#{idx + 1}</Label>
                     </Col>
                     <Col>
-                <FormGroup>
+                <FormGroup >
+                    <Label>First Name</Label>
                 <Input
                 type="text"  
                 name = {firstID}
@@ -283,6 +337,7 @@ class AddMovie extends React.Component {
                 </Col>
                 <Col>
                 <FormGroup>
+                    <Label>Last Name</Label>
                 <Input
                 type="text" 
                 name = {lastID}
@@ -294,6 +349,7 @@ class AddMovie extends React.Component {
                 </Col>
                 <Col>
                 <FormGroup>
+                    <Label>Role</Label>
                 <Input
                 type="text"  
                 name = {roleID}
@@ -307,22 +363,25 @@ class AddMovie extends React.Component {
               </div>  
                 )
               })
-            }               
-            <Button color="primary" onClick={this.addActor} >Add Another Actor</Button>  
-           
-            <div className="text-center">
-            <Button  type="submit" color="primary">Add Movie</Button>  
-            </div>            
-          </form>
+            }      
+            </div>         
+            <Button color="primary" onClick={this.addActor} >Add an Actor</Button>        
+                         
+
           <div className="text-center" style={{margin: "20px"}}> 
-          <form onSubmit={this.handleImageSubmit}>     
+    
           <Label>Upload A Movie Poster: Currently needs to be movie name.jpg</Label>            
           <input type="file" className="form-control"
  id="image"
- accept="image/png, image/jpeg" onChange={this.handleImageChange} required/>
-            <Button type="submit" color="primary">Upload Poster</Button>            
-            </form>
+ accept="image/png, image/jpeg" onChange={this.handleImageChange} />
+            <div className="text-center">
+            <Button  type="submit" color="primary">Add Movie</Button> 
+            <Button color="primary" onClick={this.clearForm} >Clear Form</Button>
             </div>
+            
+            </div> 
+            </form> 
+            
         </CardBody>
       </Card>
           </div>

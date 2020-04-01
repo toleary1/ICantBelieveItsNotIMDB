@@ -60,10 +60,10 @@
     .month,
     .year,
     .decade {
-      color: $dark-gray;
+      color: rgb(0, 0, 0);
 
       &.active {
-        color: $white;
+        color: rgb(0, 0, 0);
       }
     }
   }
@@ -113,7 +113,7 @@
     bottom: -6px;
     right: auto;
     left: 10px;
-    color: $white;
+    color: $black;
     border-top: .4em solid;
     border-right: .4em solid transparent;
     border-left: .4em solid transparent;
@@ -140,12 +140,12 @@
 .bootstrap-datetimepicker-widget a[data-action] {
   padding: 0;
   border-width: 0;
-  color: #fff;
+  color: rgb(0, 0, 0);
   background-color: transparent;
 }
 .bootstrap-datetimepicker-widget a[data-action="togglePicker"],
 .bootstrap-datetimepicker-widget a[data-action="togglePicker"]:hover {
-    color: $primary;
+  color: rgb(0, 0, 0);
 }
 .bootstrap-datetimepicker-widget a[data-action]:hover {
   background-color: transparent;
@@ -163,7 +163,7 @@
   font-size: 1.5em;
   margin: 3px;
   border-radius: 50%;
-  color: $dark-gray;
+  color: rgb(0, 0, 0);
 }
 .bootstrap-datetimepicker-widget button[data-action] {
   width: 38px;
@@ -243,7 +243,7 @@
 }
 .bootstrap-datetimepicker-widget table th.disabled, .bootstrap-datetimepicker-widget table th.disabled:hover {
   background: none;
-  color: #cfcfca;
+  color: black;
   cursor: not-allowed;
 }
 .bootstrap-datetimepicker-widget table th.prev span, .bootstrap-datetimepicker-widget table th.next span {
@@ -254,7 +254,7 @@
   font-size: 12px;
   border-radius: 50%;
   text-align: center;
-  color: $primary;
+  color: black;
 }
 .bootstrap-datetimepicker-widget table th.prev::after {
   content: "Previous Month";
@@ -272,14 +272,14 @@
   cursor: pointer;
 }
 .bootstrap-datetimepicker-widget table thead tr:first-child th:hover span, .bootstrap-datetimepicker-widget table thead tr:first-child th.picker-switch:hover {
-  background: #eee;
+  background: rgb(7, 0, 0);
 }
 
 .bootstrap-datetimepicker-widget table td.cw > div {
   font-size: .8em;
   height: 20px;
   line-height: 20px;
-  color: #cfcfca;
+  color: #000000;
 }
 .bootstrap-datetimepicker-widget table td.day > div,
 .bootstrap-datetimepicker-widget table td.minute > div,

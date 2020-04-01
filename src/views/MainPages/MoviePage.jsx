@@ -62,27 +62,31 @@ class MoviePage extends React.Component {
     signedInUser: localStorage.getItem('signedInUser'),
     movieinfomap: [],
     commentmap: [],
-    reviewscoreaverage: ""    
+    reviewscoreaverage: 0,
+    reviewalert: "",
+    reviewalerthidden: true 
   }
   }
 
 
 componentDidMount() {
-   // const signedInUser = localStorage.getItem('signedInUser');
    //scroll to the top of the page on load
    window.scrollTo(0, 0);
+   //set current movie to local storage so the site doesn't crash on a page reload
     const moviestate = localStorage.getItem('moviestate');
     this.setState({moviestate});
     const idstate = localStorage.getItem('idstate');
     this.setState({idstate});
-    console.log(`Moviestate is: ${moviestate}`);
+    //template class list
     document.body.classList.toggle("profile-page");
 
-    //movie info axios post
+    /*
+    axios post to get the movie page information
+    */
     const movieinfo = {
       postmoviename: moviestate,
       postmovieID: idstate
-    };
+    };    
     axios
     .post(
       "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/moviepage", movieinfo
@@ -95,8 +99,10 @@ componentDidMount() {
     .catch(function (error) { 
       console.log(error);
     }) 
-
-    //comment info axios post
+    
+    /*
+    axios post to get the comment info
+    */
     const commentlist = {
       commentmovieID: idstate
     }; 
@@ -112,6 +118,9 @@ componentDidMount() {
     .catch(function (error) { 
       console.log(error);
     })   
+    /*
+    Axios post to get the review score information
+    */
     const reviewscore = {
       postmovieID: localStorage.getItem('idstate'),
     };
@@ -128,11 +137,14 @@ componentDidMount() {
     })  
   }
   
-
+  /*
+  Function for submitting a comment
+  */
   onSubmitComment (e) {
     e.preventDefault();
     if(this.state.signedInUser === null)
     {
+      //sets the alert if no one is signed in
       this.setState({
         alertvisible: true,
         commentalert: "You need to be signed in"
@@ -141,7 +153,9 @@ componentDidMount() {
       return;
     }
     const idstate = localStorage.getItem('idstate');
-    //comment post axios
+     /*
+    axios post to submit the comment if a user is signed in
+    */
     const commentinfo = {
       postuser: this.state.signedInUser,
       postmovieID: idstate,
@@ -166,7 +180,58 @@ componentDidMount() {
       console.log(error);
     })    
   }
-
+   /*
+    axios post to submit a review 
+    */
+  submitReview (e) {
+    e.preventDefault();
+    this.setState({
+      reviewalert: "",
+        reviewalerthidden: true
+    })
+    //if no one is signed in set the alert to tell the user 
+    if(this.state.signedInUser === null)
+    {
+      this.setState({
+        reviewalerthidden: false,
+        reviewalert: "You must be signed in to submit a review"
+      });
+      return;
+    }
+    const reviewinfo = {
+      postreview: this.state.review,
+      postmovieID: localStorage.getItem('idstate'),
+      postuser: this.state.signedInUser
+    };
+    axios
+    .post(
+      "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/submitreview", reviewinfo
+    )
+    .then(response => {
+      console.log(response.data);
+      this.setState({
+        reviewalert: response.data,
+        reviewalerthidden: false
+      })
+    })
+    .catch(function (error) { 
+      console.log(error);
+    }) 
+    const reviewscore = {
+      postmovieID: localStorage.getItem('idstate'),
+    };
+    axios
+    .post(
+      "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/reviewscore", reviewscore
+    )
+    .then(response => {
+      console.log(response.data);
+      this.setState({reviewscoreaverage: response.data});
+    })
+    .catch(function (error) { 
+      console.log(error);
+    })  
+  }
   onChangeComment(e) {
     this.setState({
       comment: e.target.value
@@ -179,30 +244,7 @@ componentDidMount() {
     })
     console.log(this.state.review);
   } 
-
-    submitReview (e) {
-      e.preventDefault();
-      if(this.state.signedInUser === null)
-      {
-        console.log("not signed in for review");
-        return;
-      }
-      const reviewinfo = {
-        postreview: this.state.review,
-        postmovieID: localStorage.getItem('idstate'),
-        postuser: this.state.signedInUser
-      };
-      axios
-      .post(
-        "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/submitreview", reviewinfo
-      )
-      .then(response => {
-        console.log(response.data);
-      })
-      .catch(function (error) { 
-        console.log(error);
-      }) 
-    }
+   
   // .slice to get only the first index that has the movie information
   MovieInfo () {
     return this.state.movieinfomap.slice(0,1).map(function (object, i) {
@@ -228,7 +270,7 @@ componentDidMount() {
       <>
         <IndexNavbar />
         <div className="wrapper">
-          <div className="page-header" style={{minHeight: "150px"}}>
+          <div className="page-header" style={{height: "25px", minHeight: "100px"}}>
             <img
               alt="..."
               className="dots"
@@ -239,23 +281,33 @@ componentDidMount() {
               className="path"
               src={require("assets/img/path4.png")}
             />
+          
             <Container>
+            
             <div className="content-center brand">
             <h1 className="h1-seo"></h1>
             </div>
             </Container>
             </div>            
-            <div className="section">
+            <div className="section" style={{ padding: "5px"}}>
             <Container className="align-items-center">
-              {this.MovieInfo ()}                    
+            <Card>
+                    <CardBody>
+              {this.MovieInfo ()}   
+              </CardBody>
+                      </Card>                 
               </Container>
               </div> 
-              <div className="section">  
-              <Container className="align-items-center">       
+              <div className="section" style={{ padding: "5px"}}>  
+              <Container className="align-items-center">  
+              <Card>
+                    <CardBody>
+
+                    
               <Row>
                 <Col lg="6" md="6">
-                <h4 className = "title text-left">Review Score: </h4>
-                <h4 className = "title text-left">{this.state.reviewscoreaverage}</h4>
+                  <Alert hidden={this.state.reviewalerthidden}>{this.state.reviewalert}</Alert>
+                <h4 className = "title text-left">Average Review Score:&nbsp;&nbsp;{this.state.reviewscoreaverage}</h4>
                 </Col>
             <Col lg="6" md="6" >
             <Form onSubmit={this.submitReview}>
@@ -267,33 +319,39 @@ componentDidMount() {
               <option style={{color: "black"}} value="4">4</option>
               <option style={{color: "black"}} value="5">5</option>
             </Input>
-            <Button  type="submit" color="primary">Add Review</Button>
+            <Button  type="submit" color="primary" size="sm">Add Review</Button>
             </Form>
+            
             </Col>
               </Row>
+              </CardBody>
+                      </Card>
               </Container>  
               </div>              
-              <div className="section">
+              <div className="section" style={{ padding: "5px"}}>
               <Container className="align-items-center">
+              <Card>
+                    <CardBody>
               <Row> 
                   <Col>
               <h1 className="title text-center">Cast</h1>
               </Col>
                 </Row>  
                   {this.CastInfo ()}
+
                     <Row className="justify-content-md-center">
                     <h1 className="title text-center">Comments</h1>
                         </Row>
                        {this.CommentInfoFill ()}
+                        
               <Row className="justify-content-md-center">
                 <Col md="6">
-                  <Card className="card-plain">
-                    <CardHeader>
+                  
+                   
                       
                       <Alert color="warning" isOpen={this.state.alertvisible}>
                         {this.state.commentalert}</Alert>                    
-                    </CardHeader>
-                    <CardBody>
+                                          
                       <Form onSubmit = {this.onSubmitComment}>
                         <Row className="justify-content-md-center">
                           <Col md="12">
@@ -318,10 +376,13 @@ componentDidMount() {
                           Add Comment
                         </Button>
                       </Form>
-                    </CardBody>
-                  </Card>
+                      
+
+
                 </Col>                
               </Row>
+              </CardBody>
+                      </Card>
             </Container>
             </div>
             </div>

@@ -56,6 +56,7 @@ class ComponentsNavbar extends React.Component {
       welcomeHidden: localStorage.getItem('welcomeHidden') ? false: true,      
       logOutHidden: localStorage.getItem('logOutHidden') ? false: true,
       adminAddMovieHidden: localStorage.getItem('adminAddMovieHidden') ? false: true,
+      adminEditMovieHidden: localStorage.getItem('adminEditMovieHidden') ? false: true,
       /* Non-binary state variables*/
       color: "navbar-transparent",
       username: "",
@@ -280,8 +281,10 @@ onSignIn(e) {
     if (this.state.signedInUser === 'admin')
     {
       localStorage.setItem('adminAddMovieHidden', false);
+      localStorage.setItem('adminEditMovieHidden', false);
       this.setState({
-        adminAddMovieHidden: false
+        adminAddMovieHidden: false,
+        adminEditMovieHidden: false
       });
     }
     //close the modal after a successful sign in
@@ -624,6 +627,16 @@ onSignIn(e) {
               tag={Link}
                 >
                 Add Movie
+                </NavLink>              
+            </NavItem>
+            <NavItem hidden={this.state.adminEditMovieHidden}>
+                <NavLink                   
+                  to="edit-movie"
+              rel="noopener noreferrer"
+              title="Edit a Movie"
+              tag={Link}
+                >
+                Edit a Movie
                 </NavLink>              
             </NavItem>
           <NavItem hidden={this.state.logOutHidden}>

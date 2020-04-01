@@ -22,6 +22,7 @@ import { HashRouter, Route, Switch, Redirect } from "react-router-dom";
 import "assets/css/nucleo-icons.css";
 import "assets/scss/blk-design-system-react.scss?v=1.0.0";
 import "assets/demo/demo.css";
+import EditMovie from "views/MainPages/EditMovie.jsx";
 import AddMovie from "views/MainPages/AddMovie.jsx";
 import ListMovies from "views/MainPages/ListMovies.jsx";
 import MoviePage from "views/MainPages/MoviePage.jsx";
@@ -33,6 +34,10 @@ ReactDOM.render(
       <Route
         path="/add-movie"
         render={props => <AddMovie {...props} />}
+      />
+      <Route
+        path="/edit-movie"
+        render={props => <EditMovie {...props} />}
       />
       <Route
         path="/list-movies"

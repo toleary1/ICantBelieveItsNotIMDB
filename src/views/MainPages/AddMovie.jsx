@@ -106,7 +106,6 @@ class AddMovie extends React.Component {
       "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/listgenres"
     )
     .then(genreresponse => {
-      console.log(genreresponse.data);
       //sets the database response into the array
       this.setState({genres: genreresponse.data});
     })
@@ -179,7 +178,7 @@ class AddMovie extends React.Component {
     }
     })
     .then(res => {
-    console.log(res.data);
+    console.log(res);
     })
     .catch(err => console.log(err))
     }
@@ -192,14 +191,24 @@ class AddMovie extends React.Component {
    };
    axios
     .post("https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/insertmovie", obj)
-    .then(function(response){
-      console.log(response);       
-      
+    .then( response => {
+      console.log(response.data);  
+        this.setState({
+          alerthidden: false,
+          addmoviealert: response.data,
+          mtitle:"",
+          moviereleasedate:"",
+          moviegenre:"",
+          moviesynopsis:"",
+          image: null,
+          cast: [{FirstName: "", LastName: "", Role: ""}],
+        });        
+      return;      
   })
     .catch(function (error) {
     console.log(error); 
     })
-    this.setState({
+    /*this.setState({
       alerthidden: false,
       addmoviealert: "Movie added successfully",
       mtitle:"",
@@ -208,7 +217,7 @@ class AddMovie extends React.Component {
       moviesynopsis:"",
       image: null,
       cast: [{FirstName: "", LastName: "", Role: ""}],
-    });
+    });*/
   }
   onChangeMovieReleaseDate = (moment) => {
     this.setState({
@@ -223,7 +232,7 @@ class AddMovie extends React.Component {
     if (["FirstName", "LastName", "Role"].includes(e.target.placeholder) ) {
       let cast = [...this.state.cast]
       cast[e.target.dataset.id][e.target.placeholder] = e.target.value
-      this.setState({cast}, () => console.log(this.state.cast))
+      this.setState({cast}/*, () => console.log(this.state.cast)*/)
     } 
     else {
       this.setState({ [e.target.name]: e.target.value })

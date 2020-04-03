@@ -59,6 +59,7 @@ class EditMovie extends React.Component {
     this.charactersLeft = this.charactersLeft.bind(this);
     this.onChangeMovie = this.onChangeMovie.bind(this);
     this.toggleDeleteModal = this.toggleDeleteModal.bind(this);
+    this.deleteMovie = this.deleteMovie.bind(this);
     this.state ={
       image: null,   
       moviegenre: "",
@@ -70,7 +71,6 @@ class EditMovie extends React.Component {
       addmoviealert: "",
       selectedmovieid: "",
       selectplaceholder: "",
-      //cast: [{FirstName: "", LastName: "", Role: ""}],  
       genres: [],
       movies: [],
       castinfomap: [],
@@ -108,9 +108,6 @@ class EditMovie extends React.Component {
         castinfomap: []
     }) 
     const result = this.state.movies.find(e => e.movieID === thismovie);
-    const thismoviegenre = result.GenreName;
-    console.log(this.state.selectedmovieid);
-    console.log(result);
 
     this.setState({
         selectedmovieid: result.movieID,
@@ -129,14 +126,12 @@ class EditMovie extends React.Component {
         "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/moviepage", castinfo
       )
       .then(response => {
-        console.log(response.data);
+        console.log(response);
         this.setState({castinfomap: response.data});
-        console.log(this.state.castinfomap);
       })
       .catch(function (error) { 
         console.log(error);
       }) 
-    console.log(thismoviegenre);
   }
 
   charactersLeft(event) {
@@ -160,7 +155,7 @@ class EditMovie extends React.Component {
       "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/listgenres"
     )
     .then(genreresponse => {
-      console.log(genreresponse.data);
+      console.log(genreresponse);
       //sets the database response into the array
       this.setState({genres: genreresponse.data});
     })
@@ -172,7 +167,7 @@ class EditMovie extends React.Component {
         "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/listmovies"
       )
       .then(movieresponse => {
-        console.log(movieresponse.data);
+        console.log(movieresponse);
         //sets the database response into the array
         this.setState({movies: movieresponse.data});
       })
@@ -197,6 +192,26 @@ class EditMovie extends React.Component {
         return <EditMovieList obj={object} key={i} />
       });
   }
+
+  deleteMovie (e) {
+    e.preventDefault();
+    const deleteobj = {
+      deleteobjmovieid: this.state.selectedmovieid,
+      deleteobjmovietitle: this.state.mtitle,
+      deleteobjcast: this.state.castinfomap,
+    };
+    axios
+     .post("https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/deletemovie", deleteobj)
+     .then(function(response){
+       console.log(response); 
+       window.location.reload();      
+       
+   })
+     .catch(function (error) {
+     console.log(error); 
+     })
+  }
+
   onSubmit(e) {
     this.setState({
       alerthidden: true,
@@ -267,26 +282,33 @@ class EditMovie extends React.Component {
      objcast: this.state.castinfomap,
      objmovieid: this.state.selectedmovieid
    };
+
    axios
     .post("https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/editmovie", obj)
-    .then(function(response){
-      console.log(response);       
+    .then( response => {
+      console.log(response);  
+      this.setState({
+        addmoviealert: response.data,
+        alerthidden: false,
+        image: null,
+        moviegenre: "",
+        mtitle: "",
+        selectedmovie: "",
+        moviesynopsis: "",
+        moviereleasedate: "",
+        selectedmovieid: "",
+      selectplaceholder: "",
+      castinfomap: [],
+      deletemodal: false
+
+      });  
+      return;   
       
   })
     .catch(function (error) {
     console.log(error); 
     })
-  /*  this.setState({
-      alerthidden: false,
-      addmoviealert: "Movie added successfully",
-      mtitle:"",
-      moviereleasedate:"",
-      moviegenre:"",
-      moviesynopsis:"",
-      selectedmovie: "",
-      image: null,
-      cast: [{FirstName: "", LastName: "", Role: ""}],
-    }); */
+        
   }
   onChangeMovieReleaseDate = (moment) => {
     this.setState({
@@ -301,7 +323,7 @@ class EditMovie extends React.Component {
     if (["actorFirstName", "actorLastName", "actorRole"].includes(e.target.placeholder) ) {
       let castinfomap = [...this.state.castinfomap]
       castinfomap[e.target.dataset.id][e.target.placeholder] = e.target.value
-      this.setState({castinfomap}, () => console.log(this.state.castinfomap))
+      this.setState({castinfomap}/*, () => console.log(this.state.castinfomap)*/)
     } 
     else {
       this.setState({ [e.target.name]: e.target.value })
@@ -310,12 +332,9 @@ class EditMovie extends React.Component {
  
   addActor = (e) => {
      
-    console.log(this.state.castinfomap.slice(-1, 0).actorIndex);
-    console.log(this.state.castinfomap);
+
     var idx = this.state.castinfomap.length;
-  /*  this.setState((prevState) => ({
-      castinfomap: [...prevState.castinfomap, {FirstName:"", LastName:"", Role:"", actorIndex: idx}],
-    })); */
+
     let {castinfomap} = this.state;
     var idx = castinfomap.length;
   castinfomap.map((val, idx) => {
@@ -378,7 +397,7 @@ class EditMovie extends React.Component {
         window.location.reload();
       }
   render() {
-    let {castinfomap} = this.state
+
     return (
       <>
         <IndexNavbar/>
@@ -410,9 +429,7 @@ class EditMovie extends React.Component {
                </Input>
                </Col>
             </Row>
-            <Row><br></br></Row>
-            <Alert color="danger" hidden={this.state.alerthidden}>{this.state.addmoviealert}</Alert>
-       
+            <Row><br></br></Row>      
           
             <div className="form-row">
               <FormGroup className="col-md-5">
@@ -462,55 +479,10 @@ class EditMovie extends React.Component {
             </FormGroup>
             <div style={{height: "300px", overflowX: "hidden", overflowY: "scroll", border: '1px solid #2b3553'}}>
             <h3 style={{margin: "15px"}}>Cast List</h3>
+            <Label>Leave role field blank to remove an actor from the cast</Label>
             
             {this.CastList ()}  
-              {               
-           /*   castinfomap.map((val, idx) => {
-                  let firstID = `actorFirstName-${idx}`, lastID = `actorLastName-${idx}`, roleID = `actorRole-${idx}`
-                  return(  
-                <div key={idx}>
-                  <Row>
-                    <Col>
-                <FormGroup >
-                    <Label>First Name</Label>
-                <Input
-                type="text"  
-                name = {firstID}
-                data-id={idx}
-                id={firstID}
-                value={castinfomap[idx].actorFirstName}                                             
-                placeholder="actorFirstName"/>
-                </FormGroup>
-                </Col>
-                <Col>
-                <FormGroup>
-                    <Label>Last Name</Label>
-                <Input
-                type="text" 
-                name = {lastID}
-                data-id={idx}
-                id={lastID}
-                value={castinfomap[idx].actorLastName}                            
-                placeholder="actorLastName" />
-                </FormGroup>
-                </Col>
-                <Col>
-                <FormGroup>
-                    <Label>Role</Label>
-                <Input
-                type="text"  
-                name = {roleID}
-                data-id={idx}
-                id={roleID}
-                value={castinfomap[idx].actorRole}                
-                placeholder="actorRole"/>
-              </FormGroup>
-              </Col>
-              </Row>
-              </div>  
-                )
-              }) */
-             }      
+     
             </div>         
             <Button color="primary" onClick={this.addActor} >Add Actor</Button>        
                        
@@ -522,6 +494,7 @@ class EditMovie extends React.Component {
  id="image"
  accept="image/png, image/jpeg" onChange={this.handleImageChange} />
             <div className="text-center">
+            <Alert color="danger" hidden={this.state.alerthidden}>{this.state.addmoviealert}</Alert>
             <Button  type="submit" color="primary">Submit Movie</Button> 
             
             </div>
@@ -531,8 +504,8 @@ class EditMovie extends React.Component {
             <Button color="primary" onClick={this.toggleDeleteModal}>Delete Movie</Button>
             <Modal isOpen={this.state.deletemodal} toggle={this.toggleDeleteModal}  className="text-center">
               <div className="text-center">
-            <Alert color="warning">Are you sure you want to delete the movie?</Alert>
-            <Button>Yes</Button>
+            <Alert color="warning">Are you sure you want to delete {this.state.mtitle}?</Alert>
+            <Button onClick={this.deleteMovie}>Yes</Button>
             <Button onClick={this.toggleDeleteModal}>No</Button>
             </div>
             </Modal>

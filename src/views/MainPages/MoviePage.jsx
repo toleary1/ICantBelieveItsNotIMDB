@@ -30,7 +30,6 @@ import {
   FormGroup,
   Input,
   Card,
-  CardHeader,
   CardBody,
   Form,
   Container,
@@ -92,9 +91,7 @@ componentDidMount() {
       "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/moviepage", movieinfo
     )
     .then(response => {
-      console.log(response.data);
       this.setState({movieinfomap: response.data});
-      console.log(this.state.movieinfomap);
     })
     .catch(function (error) { 
       console.log(error);
@@ -111,9 +108,7 @@ componentDidMount() {
       "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/listcomments", commentlist
     )
     .then(commentresponse => {
-      console.log(commentresponse.data);
       this.setState({commentmap: commentresponse.data});
-      console.log(this.state.commentmap);
     })
     .catch(function (error) { 
       console.log(error);
@@ -129,7 +124,6 @@ componentDidMount() {
       "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/reviewscore", reviewscore
     )
     .then(response => {
-      console.log(response.data);
       this.setState({reviewscoreaverage: response.data});
     })
     .catch(function (error) { 
@@ -225,7 +219,6 @@ componentDidMount() {
       "https://cors-anywhere.herokuapp.com/http://thomasjohnoleary.com/notimdb/reviewscore", reviewscore
     )
     .then(response => {
-      console.log(response.data);
       this.setState({reviewscoreaverage: response.data});
     })
     .catch(function (error) { 
@@ -242,7 +235,6 @@ componentDidMount() {
     this.setState({
       review: e.target.value
     })
-    console.log(this.state.review);
   } 
    
   // .slice to get only the first index that has the movie information
@@ -285,7 +277,7 @@ componentDidMount() {
             <Container>
             
             <div className="content-center brand">
-            <h1 className="h1-seo"></h1>
+            
             </div>
             </Container>
             </div>            

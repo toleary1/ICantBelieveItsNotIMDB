@@ -32,7 +32,6 @@ class Movie extends React.Component {
     }
     componentDidMount() 
     {
-      console.log(this.state.moviename);
       this.setState({failed: false});
       this.setState({ imagepath: ""});
       this.setState({ defaultimagepath: ""});

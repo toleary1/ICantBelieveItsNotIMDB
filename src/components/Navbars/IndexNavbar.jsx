@@ -384,9 +384,15 @@ onSignIn(e) {
             <Nav>
               <Row>
               <Col className="collapse-brand" xs="6">
-                  <a href="#pablo" onClick={e => e.preventDefault()}>
-                    I Can't Believe It's Not IMDB
-                  </a>
+              <NavbarBrand
+              data-placement="bottom"
+              to="/"
+              rel="noopener noreferrer"
+              title="Designed and Coded by Creative Tim"
+              tag={Link}
+            >              
+              I Can't Believe It's Not IMDB
+            </NavbarBrand>
                 </Col>
                 <Col className="collapse-close text-right" xs="6">
                   <button
